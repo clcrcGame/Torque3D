@@ -55,6 +55,19 @@ function hideHUDs(%val)
 
 moveMap.bind(keyboard, "ctrl h", hideHUDs);
 
+
+function showPerimeterHUD(%val)
+{
+	/* 
+	 * PerimeterHUD and it's toggle method defined in 
+	 * game/art/gui/playGui.gui
+	 */
+	if (%val)	
+		PerimeterGui.toggle();
+}
+
+moveMap.bind(keyboard, "alt p", showPerimeterHUD);
+
 function doScreenShotHudless(%val)
 {
    if(%val)
@@ -476,7 +489,6 @@ moveMap.bind( gamepad, btn_x, toggleFirstPerson );
 
 //moveMap.bindCmd(keyboard, "ctrl w", "commandToServer('playCel',\"wave\");", "");
 //moveMap.bindCmd(keyboard, "ctrl s", "commandToServer('playCel',\"salute\");", "");
-
 moveMap.bindCmd(keyboard, "ctrl k", "commandToServer('suicide');", "");
 
 //------------------------------------------------------------------------------

@@ -23,6 +23,7 @@ moveMap.bind(keyboard, "z", toggleZoom);
 moveMap.bind(keyboard, "v", toggleFreeLook);
 moveMap.bind(keyboard, "tab", toggleFirstPerson);
 moveMap.bind(keyboard, "alt c", toggleCamera);
+moveMap.bind(keyboard, "alt p", showPerimeterHUD);
 moveMap.bindCmd(keyboard, "ctrl k", "commandToServer(\'suicide\');", "");
 moveMap.bindCmd(keyboard, "1", "commandToServer(\'use\',\"Ryder\");", "");
 moveMap.bindCmd(keyboard, "2", "commandToServer(\'use\',\"Lurker\");", "");

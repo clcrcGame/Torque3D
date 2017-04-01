@@ -89,6 +89,7 @@ function initClient()
    
    // Gui scripts
    exec("./playerList.cs");
+   exec("./Perimeter.cs");
    exec("./chatHud.cs");
    exec("./messageHud.cs");
    exec("scripts/gui/playGui.cs");

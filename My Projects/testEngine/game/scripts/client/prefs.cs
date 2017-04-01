@@ -1,5 +1,5 @@
 $pref::Camera::distanceScale = "1";
-$pref::ChatHudLength = 1;
+$pref::ChatHudLength = 3;
 $pref::Decals::enabled = "1";
 $pref::Decals::lifeTimeScale = "1";
 $pref::enableBadWordFilter = "1";
@@ -7,6 +7,7 @@ $pref::enablePostEffects = "1";
 $pref::GroundCover::densityScale = "1";
 $pref::hasClientTicked = "0";
 $pref::hasServerTicked = "0";
+$pref::HostMultiPlayer = "1";
 $pref::HudMessageLogSize = 40;
 $pref::imposter::canShadow = "1";
 $pref::Input::JoystickEnabled = 0;
