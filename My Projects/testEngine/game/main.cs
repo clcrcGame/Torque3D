@@ -21,15 +21,13 @@
 //-----------------------------------------------------------------------------
 
 // Set the name of our application
-$appName = "Full";
+$appName = "testEngine";
 
 // The directory it is run from
 $defaultGame = "scripts";
 
 // Set profile directory
 $Pref::Video::ProfilePath = "core/profile";
-$Core::windowIcon = "core/torque.png";
-$Core::splashWindowImage = "art/gui/splash.png";
 
 function createCanvas(%windowTitle)
 {
@@ -251,12 +249,6 @@ if ($displayHelp) {
 else {
    onStart();
    echo("Engine initialized...");
-
-   ModuleDatabase.scanModules( "" );
-
-   //You can also explicitly decalre some modules here to be loaded by default if they are part of your game
-   //Ex: ModuleDatabase.LoadExplicit( "AppCore" );
-   ModuleDatabase.LoadGroup( "Game" );
 
    if( !$isDedicated )
    {
