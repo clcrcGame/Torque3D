@@ -38,18 +38,11 @@ class GuiPerimeterTextHud : public GuiControl
   
    bool mShowFrame;  
    bool mShowFill;  
-   bool mShowEnergy;  
-   bool mShowTruePerimeter;  
   
    ColorF mFillColor;  
    ColorF mFrameColor;  
    ColorF mTextColor;  
-   ColorF mWarnColor;  
-  
-   F32 mWarnLevel;  
-   F32 mPulseThreshold;  
-   S32 mPulseRate;  
-  
+ 
    F32 mValue;  
   
 public:  
@@ -82,7 +75,6 @@ ConsoleDocClass(GuiPerimeterTextHud,
       "   textColor = \"0.0 1.0 0.0 1.0\" // Solid green text color\n"  
       "   showFill = \"true\";\n"  
       "   showFrame = \"true\";\n"  
-      "   showTrueValue = \"false\";\n"  
      "   profile = \"GuiBigTextProfile\";\n"  
       "};\n"  
    "@endtsexample\n\n"  
@@ -93,19 +85,10 @@ ConsoleDocClass(GuiPerimeterTextHud,
 GuiPerimeterTextHud::GuiPerimeterTextHud()  
 {  
    mShowFrame = mShowFill = true;  
-   mShowEnergy = false;  
-   mShowTruePerimeter = true;  
   
    mFillColor.set(0, 0, 0, 0.5);  
    mFrameColor.set(1, 1, 1, 1);  
    mTextColor.set(0, 1, 0, 1);  
-   mWarnColor.set(1, 0, 0, 1);  
-  
-   mWarnLevel = 50.0f;  
-   mPulseThreshold = 25.0f;  
-   mPulseRate = 0;  
-     
-   mValue = 0.2f;  
 }  
   
 void GuiPerimeterTextHud::initPersistFields()  
@@ -114,26 +97,19 @@ void GuiPerimeterTextHud::initPersistFields()
    addField("fillColor", TypeColorF, Offset(mFillColor, GuiPerimeterTextHud), "Color for the background of the control.");  
    addField("frameColor", TypeColorF, Offset(mFrameColor, GuiPerimeterTextHud), "Color for the control's frame.");  
    addField("textColor", TypeColorF, Offset(mTextColor, GuiPerimeterTextHud), "Color for the text on this control.");  
-   addField("warningColor", TypeColorF, Offset(mWarnColor, GuiPerimeterTextHud), "Color for the text when health is low.");    
    endGroup("Colors");          
   
    addGroup("View");      
    addField("showFill", TypeBool, Offset(mShowFill, GuiPerimeterTextHud), "If true, draw the background.");  
    addField("showFrame", TypeBool, Offset(mShowFrame, GuiPerimeterTextHud), "If true, draw the frame.");  
-   addField("showTrueValue", TypeBool, Offset(mShowTruePerimeter, GuiPerimeterTextHud), "If true, we don't hardcode maxPerimeter to 100.");  
-   addField("showEnergy", TypeBool, Offset(mShowEnergy, GuiPerimeterTextHud), "If true, display the energy value rather than the damage value.");  
    endGroup("View");    
-  
-   addGroup("Alert");  
-   addField("warnThreshold", TypeF32, Offset(mWarnLevel, GuiPerimeterTextHud), "The health level at which to use the warningColor.");    
-   addField("pulseThreshold", TypeF32, Offset(mPulseThreshold, GuiPerimeterTextHud), "Perimeter level at which to begin pulsing.");  
-   addField("pulseRate", TypeS32, Offset(mPulseRate, GuiPerimeterTextHud), "Speed at which the control will pulse.");  
-   endGroup("Alert");  
-  
+    
    Parent::initPersistFields();  
 }  
   
 // ----------------------------------------------------------------------------  
+
+#include <iostream>
  
 void GuiPerimeterTextHud::onRender(Point2I offset, const RectI &updateRect)  
 { 
@@ -167,7 +143,9 @@ void GuiPerimeterTextHud::onRender(Point2I offset, const RectI &updateRect)
  
    matrix.mulP(vector); 
   
-   deg = (int)(mRadToDeg(mAtan2(vector.x, vector.y)) + 0.5f) + 180;
+   deg = ((int)(mRadToDeg(mAtan2(vector.x, vector.y)) + 0.5f) + 180 + 135) % 360;
+
+   std::cout << "x = " << vector.x << "; y = " << vector.y << std::endl;
 
    char buf[4];
    dSprintf(buf, sizeof(buf), "%d", deg);
