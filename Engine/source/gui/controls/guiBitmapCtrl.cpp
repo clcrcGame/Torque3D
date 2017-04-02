@@ -196,7 +196,8 @@ void GuiBitmapCtrl::onRender(Point2I offset, const RectI &updateRect)
 								      ((texture->mBitmapSize.y*y)+offset.y)-yshift,
 								      texture->mBitmapSize.x,
 								      texture->mBitmapSize.y);
-               GFX->getDrawUtil()->drawBitmapStretchSR(texture,dstRegion, srcRegion, GFXBitmapFlip_None, GFXTextureFilterLinear);
+                                        GFX->getDrawUtil()->drawBitmapStretchSR(texture,dstRegion, srcRegion, 
+										GFXBitmapFlip_None, GFXTextureFilterLinear);
 				}
 
 		}
