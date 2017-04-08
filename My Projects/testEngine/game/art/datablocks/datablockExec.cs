@@ -65,3 +65,5 @@ exec("./vehicles/cheetahCar.cs");
 
 // Physics objects
 exec("./physics.cs");
+
+exec("./compass/compass.cs");
