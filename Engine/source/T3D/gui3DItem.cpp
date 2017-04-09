@@ -183,61 +183,11 @@ void Gui3DItemData::initPersistFields()
 void Gui3DItemData::packData(BitStream* stream)
 {
    Parent::packData(stream);
-   stream->writeFloat(friction, 10);
-   stream->writeFloat(elasticity, 10);
-   stream->writeFlag(sticky);
-   if(stream->writeFlag(gravityMod != 1.0))
-      stream->writeFloat(gravityMod, 10);
-   if(stream->writeFlag(maxVelocity != -1))
-      stream->write(maxVelocity);
-
-   if(stream->writeFlag(lightType != Gui3DItem::NoLight))
-   {
-      AssertFatal(Gui3DItem::NumLightTypes < (1 << 2), "Gui3DItemData: light type needs more bits");
-      stream->writeInt(lightType, 2);
-      stream->writeFloat(lightColor.red, 7);
-      stream->writeFloat(lightColor.green, 7);
-      stream->writeFloat(lightColor.blue, 7);
-      stream->writeFloat(lightColor.alpha, 7);
-      stream->write(lightTime);
-      stream->write(lightRadius);
-      stream->writeFlag(lightOnlyStatic);
-   }
-
-   stream->writeFlag(simpleServerCollision);
 }
 
 void Gui3DItemData::unpackData(BitStream* stream)
 {
    Parent::unpackData(stream);
-   friction = stream->readFloat(10);
-   elasticity = stream->readFloat(10);
-   sticky = stream->readFlag();
-   if(stream->readFlag())
-      gravityMod = stream->readFloat(10);
-   else
-      gravityMod = 1.0;
-
-   if(stream->readFlag())
-      stream->read(&maxVelocity);
-   else
-      maxVelocity = -1;
-
-   if(stream->readFlag())
-   {
-      lightType = stream->readInt(2);
-      lightColor.red = stream->readFloat(7);
-      lightColor.green = stream->readFloat(7);
-      lightColor.blue = stream->readFloat(7);
-      lightColor.alpha = stream->readFloat(7);
-      stream->read(&lightTime);
-      stream->read(&lightRadius);
-      lightOnlyStatic = stream->readFlag();
-   }
-   else
-      lightType = Gui3DItem::NoLight;
-
-   simpleServerCollision = stream->readFlag();
 }
 
 
@@ -316,7 +266,6 @@ Gui3DItem::Gui3DItem()
    mTypeMask |= ItemObjectType | DynamicShapeObjectType;
    mDataBlock = 0;
    mStatic = false;
-   mRotate = false;
    mVelocity = VectorF(0,0,0);
    mAtRest = true;
    mAtRestCounter = 0;
@@ -326,7 +275,6 @@ Gui3DItem::Gui3DItem()
    mCollisionObject = 0;
    mCollisionTimeout = 0;
    mPhysicsRep = NULL;
-
    mConvex.init(this);
    mWorkingQueryBox.minExtents.set(-1e9, -1e9, -1e9);
    mWorkingQueryBox.maxExtents.set(-1e9, -1e9, -1e9);
@@ -346,20 +294,14 @@ Gui3DItem::~Gui3DItem()
 
 bool Gui3DItem::onAdd()
 {
+
+
    if (!Parent::onAdd() || !mDataBlock)
       return false;
 
    if (mStatic)
       mAtRest = true;
    mObjToWorld.getColumn(3,&delta.pos);
-
-   // Setup the box for our convex object...
-   mObjBox.getCenter(&mConvex.mCenter);
-   mConvex.mSize.x = mObjBox.len_x() / 2.0;
-   mConvex.mSize.y = mObjBox.len_y() / 2.0;
-   mConvex.mSize.z = mObjBox.len_z() / 2.0;
-   mWorkingQueryBox.minExtents.set(-1e9, -1e9, -1e9);
-   mWorkingQueryBox.maxExtents.set(-1e9, -1e9, -1e9);
 
    if( !isHidden() && !mSubclassItemHandlesScene )
       addToScene();
@@ -374,47 +316,12 @@ bool Gui3DItem::onAdd()
       mDropTime = Sim::getCurrentTime();
    }
 
-   _updatePhysics();
-
    return true;
 }
 
 void Gui3DItem::_updatePhysics()
 {
    SAFE_DELETE( mPhysicsRep );
-
-   if ( !PHYSICSMGR )
-      return;
-
-   if (mDataBlock->simpleServerCollision)
-   {
-      // We only need the trigger on the server.
-      if ( isServerObject() )
-      {
-         PhysicsCollision *colShape = PHYSICSMGR->createCollision();
-         colShape->addBox( mObjBox.getExtents() * 0.5f, MatrixF::Identity );
-
-         PhysicsWorld *world = PHYSICSMGR->getWorld( isServerObject() ? "server" : "client" );
-         mPhysicsRep = PHYSICSMGR->createBody();
-         mPhysicsRep->init( colShape, 0, PhysicsBody::BF_TRIGGER | PhysicsBody::BF_KINEMATIC, this, world );
-         mPhysicsRep->setTransform( getTransform() );
-      }
-   }
-   else
-   {
-      if ( !mShapeInstance )
-         return;
-
-      PhysicsCollision* colShape = mShapeInstance->getShape()->buildColShape( false, getScale() );
-
-      if ( colShape )
-      {
-         PhysicsWorld *world = PHYSICSMGR->getWorld( isServerObject() ? "server" : "client" );
-         mPhysicsRep = PHYSICSMGR->createBody();
-         mPhysicsRep->init( colShape, 0, PhysicsBody::BF_KINEMATIC, this, world );
-         mPhysicsRep->setTransform( getTransform() );
-      }
-   }
 }
 
 bool Gui3DItem::onNewDataBlock( GameBaseData *dptr, bool reload )
@@ -426,16 +333,11 @@ bool Gui3DItem::onNewDataBlock( GameBaseData *dptr, bool reload )
    if (!mSubclassItemHandlesScene)
       scriptOnNewDataBlock();
 
-   if ( isProperlyAdded() )
-      _updatePhysics();
-
    return true;
 }
 
 void Gui3DItem::onRemove()
 {
-   mWorkingQueryBox.minExtents.set(-1e9, -1e9, -1e9);
-   mWorkingQueryBox.maxExtents.set(-1e9, -1e9, -1e9);
 
    SAFE_DELETE( mPhysicsRep );
 
@@ -450,13 +352,7 @@ void Gui3DItem::onRemove()
 
 void Gui3DItem::onDeleteNotify( SimObject *obj )
 {
-   if ( obj == mCollisionObject ) 
-   {
-      mCollisionObject = NULL;
-      mCollisionTimeout = 0;
-   }
 
-   Parent::onDeleteNotify( obj );
 }
 
 // Lighting: -----------------------------------------------------------------
@@ -512,42 +408,17 @@ Point3F Gui3DItem::getVelocity() const
 
 void Gui3DItem::setVelocity(const VectorF& vel)
 {
-   mVelocity = vel;
-
-   // Clamp against the maximum velocity.
-   if ( mDataBlock->maxVelocity > 0 )
-   {
-      F32 len = mVelocity.magnitudeSafe();
-      if ( len > mDataBlock->maxVelocity )
-      {
-         Point3F excess = mVelocity * ( 1.0f - (mDataBlock->maxVelocity / len ) );
-         mVelocity -= excess;
-      }
-   }
-
-   setMaskBits(PositionMask);
-   mAtRest = false;
-   mAtRestCounter = 0;
+   mVelocity = Point3F(0, 0, 0); 
 }
 
 void Gui3DItem::applyImpulse(const Point3F&,const VectorF& vec)
 {
-   // Gui3DItems ignore angular velocity
-   VectorF vel;
-   vel.x = vec.x / mDataBlock->mass;
-   vel.y = vec.y / mDataBlock->mass;
-   vel.z = vec.z / mDataBlock->mass;
-   setVelocity(vel);
+
 }
 
 void Gui3DItem::setCollisionTimeout(ShapeBase* obj)
 {
-   if (mCollisionObject)
-      clearNotify(mCollisionObject);
-   deleteNotify(obj);
-   mCollisionObject = obj;
-   mCollisionTimeout = sCollisionTimeout;
-   setMaskBits(ThrowSrcMask);
+
 }
 
 
@@ -565,52 +436,6 @@ void Gui3DItem::processTick(const Move* move)
 
    if ( isMounted() )
       return;
-
-   //
-   if (mCollisionObject && !--mCollisionTimeout)
-      mCollisionObject = 0;
-
-   // Warp to catch up to server
-   if (delta.warpTicks > 0)
-   {
-      delta.warpTicks--;
-
-      // Set new pos.
-      MatrixF mat = mObjToWorld;
-      mat.getColumn(3,&delta.pos);
-      delta.pos += delta.warpOffset;
-      mat.setColumn(3,delta.pos);
-      Parent::setTransform(mat);
-
-      // Backstepping
-      delta.posVec.x = -delta.warpOffset.x;
-      delta.posVec.y = -delta.warpOffset.y;
-      delta.posVec.z = -delta.warpOffset.z;
-   }
-   else
-   {
-      if (isServerObject() && mAtRest && (mStatic == false && mDataBlock->sticky == false))
-      {
-         if (++mAtRestCounter > csmAtRestTimer)
-         {
-            mAtRest = false;
-            mAtRestCounter = 0;
-            setMaskBits(PositionMask);
-         }
-      }
-
-      if (!mStatic && !mAtRest && isHidden() == false)
-      {
-         updateVelocity(TickSec);
-         updateWorkingCollisionSet(isGhost() ? sClientCollisionMask : sServerCollisionMask, TickSec);
-         updatePos(isGhost() ? sClientCollisionMask : sServerCollisionMask, TickSec);
-      }
-      else
-      {
-         // Need to clear out last updatePos or warp interpolation
-         delta.posVec.set(0,0,0);
-      }
-   }
 
    if (!conn)
        return;
@@ -638,10 +463,7 @@ void Gui3DItem::processTick(const Move* move)
    tmp.z += tmp_vect.z;
 
    matrix.setPosition(tmp);
-   setTransform(matrix);
-
-   matrix = getTransform();
-  
+   setTransform(matrix);  
 }
 
 void Gui3DItem::interpolateTick(F32 dt)
@@ -650,12 +472,9 @@ void Gui3DItem::interpolateTick(F32 dt)
    if ( isMounted() )
       return;
 
-   // Client side interpolation
-   Point3F pos = delta.pos + delta.posVec * dt;
    MatrixF mat = mRenderObjToWorld;
-   mat.setColumn(3,pos);
    setRenderTransform(mat);
-   delta.dt = dt;
+
 }
 
 
@@ -663,27 +482,7 @@ void Gui3DItem::interpolateTick(F32 dt)
 
 void Gui3DItem::setTransform(const MatrixF& mat)
 {
-   Point3F pos;
-   mat.getColumn(3,&pos);
-   MatrixF tmat;
-   if (!mRotate) {
-      // Forces all rotation to be around the z axis
-      VectorF vec;
-      mat.getColumn(1,&vec);
-      tmat.set(EulerF(0,0,-mAtan2(-vec.x,vec.y)));
-   }
-   else
-      tmat.identity();
-   tmat.setColumn(3,pos);
-   Parent::setTransform(tmat);
-   if (!mStatic)
-   {
-      mAtRest = false;
-      mAtRestCounter = 0;
-   }
-
-   if ( mPhysicsRep )
-      mPhysicsRep->setTransform( getTransform() );
+   Parent::setTransform(mat);
 
    setMaskBits(RotationMask | PositionMask | NoWarpMask);
 }
@@ -692,372 +491,16 @@ void Gui3DItem::setTransform(const MatrixF& mat)
 //----------------------------------------------------------------------------
 void Gui3DItem::updateWorkingCollisionSet(const U32 mask, const F32 dt)
 {
-   // It is assumed that we will never accelerate more than 10 m/s for gravity...
-   //
-   Point3F scaledVelocity = mVelocity * dt;
-   F32 len    = scaledVelocity.len();
-   F32 newLen = len + (10 * dt);
-
-   // Check to see if it is actually necessary to construct the new working list,
-   //  or if we can use the cached version from the last query.  We use the x
-   //  component of the min member of the mWorkingQueryBox, which is lame, but
-   //  it works ok.
-   bool updateSet = false;
-
-   Box3F convexBox = mConvex.getBoundingBox(getTransform(), getScale());
-   F32 l = (newLen * 1.1) + 0.1;  // from Convex::updateWorkingList
-   convexBox.minExtents -= Point3F(l, l, l);
-   convexBox.maxExtents += Point3F(l, l, l);
-
-   // Check containment
-   {
-      if (mWorkingQueryBox.minExtents.x != -1e9)
-      {
-         if (mWorkingQueryBox.isContained(convexBox) == false)
-         {
-            // Needed region is outside the cached region.  Update it.
-            updateSet = true;
-         }
-         else
-         {
-            // We can leave it alone, we're still inside the cached region
-         }
-      }
-      else
-      {
-         // Must update
-         updateSet = true;
-      }
-   }
-
-   // Actually perform the query, if necessary
-   if (updateSet == true)
-   {
-      mWorkingQueryBox = convexBox;
-      mWorkingQueryBox.minExtents -= Point3F(2 * l, 2 * l, 2 * l);
-      mWorkingQueryBox.maxExtents += Point3F(2 * l, 2 * l, 2 * l);
-
-      disableCollision();
-      if (mCollisionObject)
-         mCollisionObject->disableCollision();
-
-      mConvex.updateWorkingList(mWorkingQueryBox, mask);
-
-      if (mCollisionObject)
-         mCollisionObject->enableCollision();
-      enableCollision();
-   }
 }
 
 void Gui3DItem::updateVelocity(const F32 dt)
 {
-   // Acceleration due to gravity
-   mVelocity.z += (mGravity * mDataBlock->gravityMod) * dt;
-   F32 len;
-   if (mDataBlock->maxVelocity > 0 && (len = mVelocity.len()) > (mDataBlock->maxVelocity * 1.05)) {
-      Point3F excess = mVelocity * (1.0 - (mDataBlock->maxVelocity / len ));
-      excess *= 0.1f;
-      mVelocity -= excess;
-   }
-
-   // Container buoyancy & drag
-   mVelocity.z -= mBuoyancy * (mGravity * mDataBlock->gravityMod * mGravityMod) * dt;
-   mVelocity   -= mVelocity * mDrag * dt;
+   mVelocity   = Point3F(0, 0, 0);
 }
 
 
 void Gui3DItem::updatePos(const U32 /*mask*/, const F32 dt)
 {
-   // Try and move
-   Point3F pos;
-   mObjToWorld.getColumn(3,&pos);
-   delta.posVec = pos;
-
-   bool contact = false;
-   bool nonStatic = false;
-   bool stickyNotify = false;
-   CollisionList collisionList;
-   F32 time = dt;
-
-   static Polyhedron sBoxPolyhedron;
-   static ExtrudedPolyList sExtrudedPolyList;
-   static EarlyOutPolyList sEarlyOutPolyList;
-   MatrixF collisionMatrix(true);
-   Point3F end = pos + mVelocity * time;
-   U32 mask = isServerObject() ? sServerCollisionMask : sClientCollisionMask;
-
-   // Part of our speed problem here is that we don't track contact surfaces, like we do
-   //  with the player.  In order to handle the most common and performance impacting
-   //  instance of this problem, we'll use a ray cast to detect any contact surfaces below
-   //  us.  This won't be perfect, but it only needs to catch a few of these to make a
-   //  big difference.  We'll cast from the top center of the bounding box at the tick's
-   //  beginning to the bottom center of the box at the end.
-   Point3F startCast((mObjBox.minExtents.x + mObjBox.maxExtents.x) * 0.5,
-                     (mObjBox.minExtents.y + mObjBox.maxExtents.y) * 0.5,
-                     mObjBox.maxExtents.z);
-   Point3F endCast((mObjBox.minExtents.x + mObjBox.maxExtents.x) * 0.5,
-                   (mObjBox.minExtents.y + mObjBox.maxExtents.y) * 0.5,
-                   mObjBox.minExtents.z);
-   collisionMatrix.setColumn(3, pos);
-   collisionMatrix.mulP(startCast);
-   collisionMatrix.setColumn(3, end);
-   collisionMatrix.mulP(endCast);
-   RayInfo rinfo;
-   bool doToughCollision = true;
-   disableCollision();
-   if (mCollisionObject)
-      mCollisionObject->disableCollision();
-   if (getContainer()->castRay(startCast, endCast, mask, &rinfo))
-   {
-      F32 bd = -mDot(mVelocity, rinfo.normal);
-
-      if (bd >= 0.0)
-      {
-         // Contact!
-         if (mDataBlock->sticky && rinfo.object->getTypeMask() & (STATIC_COLLISION_TYPEMASK)) {
-            mVelocity.set(0, 0, 0);
-            mAtRest = true;
-            mAtRestCounter = 0;
-            stickyNotify = true;
-            mStickyCollisionPos    = rinfo.point;
-            mStickyCollisionNormal = rinfo.normal;
-            doToughCollision = false;;
-         } else {
-            // Subtract out velocity into surface and friction
-            VectorF fv = mVelocity + rinfo.normal * bd;
-            F32 fvl = fv.len();
-            if (fvl) {
-               F32 ff = bd * mDataBlock->friction;
-               if (ff < fvl) {
-                  fv *= ff / fvl;
-                  fvl = ff;
-               }
-            }
-            bd *= 1 + mDataBlock->elasticity;
-            VectorF dv = rinfo.normal * (bd + 0.002);
-            mVelocity += dv;
-            mVelocity -= fv;
-
-            // Keep track of what we hit
-            contact = true;
-            U32 typeMask = rinfo.object->getTypeMask();
-            if (!(typeMask & StaticObjectType))
-               nonStatic = true;
-            if (isServerObject() && (typeMask & ShapeBaseObjectType)) {
-               ShapeBase* col = static_cast<ShapeBase*>(rinfo.object);
-               queueCollision(col,mVelocity - col->getVelocity());
-            }
-         }
-      }
-   }
-   enableCollision();
-   if (mCollisionObject)
-      mCollisionObject->enableCollision();
-
-   if (doToughCollision)
-   {
-      U32 count;
-      for (count = 0; count < 3; count++)
-      {
-         // Build list from convex states here...
-         end = pos + mVelocity * time;
-
-
-         collisionMatrix.setColumn(3, end);
-         Box3F wBox = getObjBox();
-         collisionMatrix.mul(wBox);
-         Box3F testBox = wBox;
-         Point3F oldMin = testBox.minExtents;
-         Point3F oldMax = testBox.maxExtents;
-         testBox.minExtents.setMin(oldMin + (mVelocity * time));
-         testBox.maxExtents.setMin(oldMax + (mVelocity * time));
-
-         sEarlyOutPolyList.clear();
-         sEarlyOutPolyList.mNormal.set(0,0,0);
-         sEarlyOutPolyList.mPlaneList.setSize(6);
-         sEarlyOutPolyList.mPlaneList[0].set(wBox.minExtents,VectorF(-1,0,0));
-         sEarlyOutPolyList.mPlaneList[1].set(wBox.maxExtents,VectorF(0,1,0));
-         sEarlyOutPolyList.mPlaneList[2].set(wBox.maxExtents,VectorF(1,0,0));
-         sEarlyOutPolyList.mPlaneList[3].set(wBox.minExtents,VectorF(0,-1,0));
-         sEarlyOutPolyList.mPlaneList[4].set(wBox.minExtents,VectorF(0,0,-1));
-         sEarlyOutPolyList.mPlaneList[5].set(wBox.maxExtents,VectorF(0,0,1));
-
-         CollisionWorkingList& eorList = mConvex.getWorkingList();
-         CollisionWorkingList* eopList = eorList.wLink.mNext;
-         while (eopList != &eorList) {
-            if ((eopList->mConvex->getObject()->getTypeMask() & mask) != 0)
-            {
-               Box3F convexBox = eopList->mConvex->getBoundingBox();
-               if (testBox.isOverlapped(convexBox))
-               {
-                  eopList->mConvex->getPolyList(&sEarlyOutPolyList);
-                  if (sEarlyOutPolyList.isEmpty() == false)
-                     break;
-               }
-            }
-            eopList = eopList->wLink.mNext;
-         }
-         if (sEarlyOutPolyList.isEmpty())
-         {
-            pos = end;
-            break;
-         }
-
-         collisionMatrix.setColumn(3, pos);
-         sBoxPolyhedron.buildBox(collisionMatrix, mObjBox, true);
-
-         // Build extruded polyList...
-         VectorF vector = end - pos;
-         sExtrudedPolyList.extrude(sBoxPolyhedron, vector);
-         sExtrudedPolyList.setVelocity(mVelocity);
-         sExtrudedPolyList.setCollisionList(&collisionList);
-
-         CollisionWorkingList& rList = mConvex.getWorkingList();
-         CollisionWorkingList* pList = rList.wLink.mNext;
-         while (pList != &rList) {
-            if ((pList->mConvex->getObject()->getTypeMask() & mask) != 0)
-            {
-               Box3F convexBox = pList->mConvex->getBoundingBox();
-               if (testBox.isOverlapped(convexBox))
-               {
-                  pList->mConvex->getPolyList(&sExtrudedPolyList);
-               }
-            }
-            pList = pList->wLink.mNext;
-         }
-
-         if (collisionList.getTime() < 1.0)
-         {
-            // Set to collision point
-            F32 dt = time * collisionList.getTime();
-            pos += mVelocity * dt;
-            time -= dt;
-
-            // Pick the most resistant surface
-            F32 bd = 0;
-            const Collision* collision = 0;
-            for (S32 c = 0; c < collisionList.getCount(); c++) {
-               const Collision &cp = collisionList[c];
-               F32 dot = -mDot(mVelocity,cp.normal);
-               if (dot > bd) {
-                  bd = dot;
-                  collision = &cp;
-               }
-            }
-
-            if (collision && mDataBlock->sticky && collision->object->getTypeMask() & (STATIC_COLLISION_TYPEMASK)) {
-               mVelocity.set(0, 0, 0);
-               mAtRest = true;
-               mAtRestCounter = 0;
-               stickyNotify = true;
-               mStickyCollisionPos    = collision->point;
-               mStickyCollisionNormal = collision->normal;
-               break;
-            } else {
-               // Subtract out velocity into surface and friction
-               if (collision) {
-                  VectorF fv = mVelocity + collision->normal * bd;
-                  F32 fvl = fv.len();
-                  if (fvl) {
-                     F32 ff = bd * mDataBlock->friction;
-                     if (ff < fvl) {
-                        fv *= ff / fvl;
-                        fvl = ff;
-                     }
-                  }
-                  bd *= 1 + mDataBlock->elasticity;
-                  VectorF dv = collision->normal * (bd + 0.002);
-                  mVelocity += dv;
-                  mVelocity -= fv;
-
-                  // Keep track of what we hit
-                  contact = true;
-                  U32 typeMask = collision->object->getTypeMask();
-                  if (!(typeMask & StaticObjectType))
-                     nonStatic = true;
-                  if (isServerObject() && (typeMask & ShapeBaseObjectType)) {
-                     ShapeBase* col = static_cast<ShapeBase*>(collision->object);
-                     queueCollision(col,mVelocity - col->getVelocity());
-                  }
-               }
-            }
-         }
-         else
-         {
-            pos = end;
-            break;
-         }
-      }
-      if (count == 3)
-      {
-         // Couldn't move...
-         mVelocity.set(0, 0, 0);
-      }
-   }
-
-   // If on the client, calculate delta for backstepping
-   if (isGhost()) {
-      delta.pos     = pos;
-      delta.posVec -= pos;
-      delta.dt = 1;
-   }
-
-   // Update transform
-   MatrixF mat = mObjToWorld;
-   mat.setColumn(3,pos);
-   Parent::setTransform(mat);
-   enableCollision();
-   if (mCollisionObject)
-      mCollisionObject->enableCollision();
-   updateContainer();
-
-   if ( mPhysicsRep )
-      mPhysicsRep->setTransform( mat );
-
-   //
-   if (contact) {
-      // Check for rest condition
-      if (!nonStatic && mVelocity.len() < sAtRestVelocity) {
-         mVelocity.x = mVelocity.y = mVelocity.z = 0;
-         mAtRest = true;
-         mAtRestCounter = 0;
-      }
-
-      // Only update the client if we hit a non-static shape or
-      // if this is our final rest pos.
-      if (nonStatic || mAtRest)
-         setMaskBits(PositionMask);
-   }
-
-   // Collision callbacks. These need to be processed whether we hit
-   // anything or not.
-   if (!isGhost())
-   {
-      SimObjectPtr<Gui3DItem> safePtr(this);
-      if (stickyNotify)
-      {
-         notifyCollision();
-         if(bool(safePtr))
-			 onStickyCollision_callback( getIdString() );
-      }
-      else
-         notifyCollision();
-
-      // water
-      if(bool(safePtr))
-      {
-         if(!mInLiquid && mWaterCoverage != 0.0f)
-         {
-			onEnterLiquid_callback( getIdString(), mWaterCoverage, mLiquidType.c_str() );
-            mInLiquid = true;
-         }
-         else if(mInLiquid && mWaterCoverage == 0.0f)
-         {
-			 onLeaveLiquid_callback(getIdString(), mLiquidType.c_str());
-            mInLiquid = false;
-         }
-      }
-   }
 }
 
 
@@ -1070,15 +513,7 @@ bool Gui3DItem::buildPolyList(PolyListContext context, AbstractPolyList* polyLis
    if ( context == PLC_Decal )
       return false;
 
-   // Collision with the item is always against the item's object
-   // space bounding box axis aligned in world space.
-   Point3F pos;
-   mObjToWorld.getColumn(3,&pos);
-   IMat.setColumn(3,pos);
-   polyList->setTransform(&IMat, mObjScale);
-   polyList->setObject(this);
-   polyList->addBox(mObjBox);
-   return true;
+   return false;
 }
 
 
@@ -1089,7 +524,6 @@ U32 Gui3DItem::packUpdate(NetConnection *connection, U32 mask, BitStream *stream
    U32 retMask = Parent::packUpdate(connection,mask,stream);
 
    if (stream->writeFlag(mask & InitialUpdateMask)) {
-      stream->writeFlag(mRotate);
       stream->writeFlag(mStatic);
       if (stream->writeFlag(getScale() != Point3F(1, 1, 1)))
          mathWrite(*stream, getScale());
@@ -1103,11 +537,8 @@ U32 Gui3DItem::packUpdate(NetConnection *connection, U32 mask, BitStream *stream
    else
       stream->writeFlag(false);
 
-   if (stream->writeFlag(mask & RotationMask && !mRotate)) {
-      // Assumes rotation is about the Z axis
-      AngAxisF aa(mObjToWorld);
-      stream->writeFlag(aa.axis.z < 0);
-      stream->write(aa.angle);
+   if (stream->writeFlag(mask & RotationMask)) {
+
    }
 
    if (stream->writeFlag(mask & PositionMask)) {
@@ -1128,7 +559,7 @@ void Gui3DItem::unpackUpdate(NetConnection *connection, BitStream *stream)
 
    // InitialUpdateMask
    if (stream->readFlag()) {
-      mRotate = stream->readFlag();
+
       mStatic = stream->readFlag();
       if (stream->readFlag())
          mathRead(*stream, &mObjScale);
@@ -1144,16 +575,9 @@ void Gui3DItem::unpackUpdate(NetConnection *connection, BitStream *stream)
 
    MatrixF mat = mObjToWorld;
 
-   // RotationMask && !mRotate
+   // RotationMask
    if (stream->readFlag()) {
       // Assumes rotation is about the Z axis
-      AngAxisF aa;
-      aa.axis.set(0.0f, 0.0f, stream->readFlag() ? -1.0f : 1.0f);
-      stream->read(&aa.angle);
-      aa.setMatrix(&mat);
-      Point3F pos;
-      mObjToWorld.getColumn(3,&pos);
-      mat.setColumn(3,pos);
    }
 
    // PositionMask
@@ -1167,42 +591,10 @@ void Gui3DItem::unpackUpdate(NetConnection *connection, BitStream *stream)
          mathRead(*stream, &mVelocity);
 
       if (stream->readFlag() && isProperlyAdded()) {
-         // Determin number of ticks to warp based on the average
-         // of the client and server velocities.
-         delta.warpOffset = pos - delta.pos;
-         F32 as = (speed + mVelocity.len()) * 0.5f * TickSec;
-         F32 dt = (as > 0.00001f) ? delta.warpOffset.len() / as: sMaxWarpTicks;
-         delta.warpTicks = (S32)((dt > sMinWarpTicks)? getMax(mFloor(dt + 0.5f), 1.0f): 0.0f);
 
-         if (delta.warpTicks)
-         {
-            // Setup the warp to start on the next tick, only the
-            // object's position is warped.
-            if (delta.warpTicks > sMaxWarpTicks)
-               delta.warpTicks = sMaxWarpTicks;
-            delta.warpOffset /= (F32)delta.warpTicks;
-         }
-         else {
-            // Going to skip the warp, server and client are real close.
-            // Adjust the frame interpolation to move smoothly to the
-            // new position within the current tick.
-            Point3F cp = delta.pos + delta.posVec * delta.dt;
-            VectorF vec = delta.pos - cp;
-            F32 vl = vec.len();
-            if (vl) {
-               F32 s = delta.posVec.len() / vl;
-               delta.posVec = (cp - pos) * s;
-            }
-            delta.pos = pos;
-            mat.setColumn(3,pos);
-         }
       }
       else {
-         // Set the item to the server position
-         delta.warpTicks = 0;
-         delta.posVec.set(0,0,0);
-         delta.pos = pos;
-         delta.dt = 0;
+
          mat.setColumn(3,pos);
       }
    }
@@ -1341,7 +733,6 @@ void Gui3DItem::initPersistFields()
 {
    addGroup("Misc");	
    addProtectedField("static", TypeBool, Offset(mStatic, Gui3DItem), &_setStatic, &defaultProtectedGetFn, "If true, the object is not moving in the world.\n");
-   addProtectedField("rotate", TypeBool, Offset(mRotate, Gui3DItem), &_setRotate, &defaultProtectedGetFn, "If true, the object will automatically rotate around its Z axis.\n");
    addProtectedField("addX", TypeF32, Offset(addX, Gui3DItem), &_setRotate, &defaultProtectedGetFn, "Sets X position of compass\n");
    addProtectedField("addY", TypeF32, Offset(addY, Gui3DItem), &_setRotate, &defaultProtectedGetFn, "Sets Y position of compass\n");
    addProtectedField("addZ", TypeF32, Offset(addZ, Gui3DItem), &_setRotate, &defaultProtectedGetFn, "Sets Z position of compass\n");
@@ -1365,47 +756,12 @@ void Gui3DItem::consoleInit()
 
 void Gui3DItem::prepRenderImage( SceneRenderState* state )
 {
-   // Gui3DItems do NOT render if destroyed
-   if (getDamageState() == Destroyed)
-      return;
-
    Parent::prepRenderImage( state );
 }
 
 void Gui3DItem::buildConvex(const Box3F& box, Convex* convex)
 {
-   if (mShapeInstance == NULL)
-      return;
-
-   // These should really come out of a pool
-   mConvexList->collectGarbage();
-
-   if (box.isOverlapped(getWorldBox()) == false)
-      return;
-
-   // Just return a box convex for the entire shape...
-   Convex* cc = 0;
-   CollisionWorkingList& wl = convex->getWorkingList();
-   for (CollisionWorkingList* itr = wl.wLink.mNext; itr != &wl; itr = itr->wLink.mNext) {
-      if (itr->mConvex->getType() == BoxConvexType &&
-          itr->mConvex->getObject() == this) {
-         cc = itr->mConvex;
-         break;
-      }
-   }
-   if (cc)
-      return;
-
-   // Create a new convex.
-   BoxConvex* cp = new BoxConvex;
-   mConvexList->registerObject(cp);
-   convex->addToWorkingList(cp);
-   cp->init(this);
-
-   mObjBox.getCenter(&cp->mCenter);
-   cp->mSize.x = mObjBox.len_x() / 2.0f;
-   cp->mSize.y = mObjBox.len_y() / 2.0f;
-   cp->mSize.z = mObjBox.len_z() / 2.0f;
+	return;
 }
 
 void Gui3DItem::advanceTime(F32 dt)
@@ -1413,24 +769,4 @@ void Gui3DItem::advanceTime(F32 dt)
    Parent::advanceTime(dt);
    if ( isMounted() )
       return;
-
-   if( mRotate )
-   {
-      F32 r = (dt / sRotationSpeed) * M_2PI;
-      Point3F pos = mRenderObjToWorld.getPosition();
-      MatrixF rotMatrix;
-      if( mRotate )
-      {
-         rotMatrix.set( EulerF( 0.0, 0.0, r ) );
-      }
-      else
-      {
-         rotMatrix.set( EulerF( r * 0.5, 0.0, r ) );
-      }
-      MatrixF mat = mRenderObjToWorld;
-      mat.setPosition( pos );
-      mat.mul( rotMatrix );
-      setRenderTransform(mat);
-   }
-
 }
