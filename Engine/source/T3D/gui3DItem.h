@@ -93,7 +93,7 @@ class Gui3DItem: public ShapeBase
    // Static attributes
    Gui3DItemData* mDataBlock;
    static F32 mGravity;
-   bool mStatic;
+
    bool mRotate;
    F32 addX;
    F32 addY;
@@ -153,8 +153,9 @@ class Gui3DItem: public ShapeBase
    void buildConvex(const Box3F& box, Convex* convex);
    void onDeleteNotify(SimObject*);
 
-   static bool _setStatic(void *object, const char *index, const char *data);
-   static bool _setRotate(void *object, const char *index, const char *data);
+   static bool _setAddX(void *object, const char *index, const char *data);
+   static bool _setAddY(void *object, const char *index, const char *data);
+   static bool _setAddZ(void *object, const char *index, const char *data);
 
   protected:
    void _updatePhysics();
@@ -174,7 +175,6 @@ class Gui3DItem: public ShapeBase
    void onRemove();
    bool onNewDataBlock( GameBaseData *dptr, bool reload );
 
-   bool isStatic()   { return mStatic; }
    bool isAtRest()   { return mAtRest; }
    bool isRotating() { return mRotate; }
    Point3F getVelocity() const;

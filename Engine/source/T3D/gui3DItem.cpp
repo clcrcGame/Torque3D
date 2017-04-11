@@ -265,7 +265,7 @@ Gui3DItem::Gui3DItem()
 {
    mTypeMask |= ItemObjectType | DynamicShapeObjectType;
    mDataBlock = 0;
-   mStatic = false;
+
    mVelocity = VectorF(0,0,0);
    mAtRest = true;
    mAtRestCounter = 0;
@@ -299,8 +299,6 @@ bool Gui3DItem::onAdd()
    if (!Parent::onAdd() || !mDataBlock)
       return false;
 
-   if (mStatic)
-      mAtRest = true;
    mObjToWorld.getColumn(3,&delta.pos);
 
    if( !isHidden() && !mSubclassItemHandlesScene )
@@ -362,7 +360,7 @@ void Gui3DItem::registerLights(LightManager * lightManager, bool lightingScene)
    if(lightingScene)
       return;
 
-   if(mDataBlock->lightOnlyStatic && !mStatic)
+   if(mDataBlock->lightOnlyStatic)
       return;
 
    F32 intensity;
@@ -510,10 +508,7 @@ static MatrixF IMat(1);
 
 bool Gui3DItem::buildPolyList(PolyListContext context, AbstractPolyList* polyList, const Box3F&, const SphereF&)
 {
-   if ( context == PLC_Decal )
       return false;
-
-   return false;
 }
 
 
@@ -523,165 +518,48 @@ U32 Gui3DItem::packUpdate(NetConnection *connection, U32 mask, BitStream *stream
 {
    U32 retMask = Parent::packUpdate(connection,mask,stream);
 
-   if (mask & ThrowSrcMask && mCollisionObject) {
-      S32 gIndex = connection->getGhostIndex(mCollisionObject);
-      if (stream->writeFlag(gIndex != -1))
-         stream->writeInt(gIndex,NetConnection::GhostIdBitSize);
-   }
-   else
-      stream->writeFlag(false);
-
    return retMask;
 }
 
 void Gui3DItem::unpackUpdate(NetConnection *connection, BitStream *stream)
 {
    Parent::unpackUpdate(connection,stream);
-
-   // ThrowSrcMask && mCollisionObject
-   if (stream->readFlag()) {
-      S32 gIndex = stream->readInt(NetConnection::GhostIdBitSize);
-      setCollisionTimeout(static_cast<ShapeBase*>(connection->resolveGhost(gIndex)));
-   }
-
-   MatrixF mat = mObjToWorld;
 }
 
-DefineEngineMethod( Gui3DItem, isStatic, bool, (),, 
-   "@brief Is the object static (ie, non-movable)?\n\n"   
-   "@return True if the object is static, false if it is not.\n"
-   "@tsexample\n"
-	   "// Query the item on if it is or is not static.\n"
-	   "%isStatic = %itemData.isStatic();\n\n"
-   "@endtsexample\n\n"
-   "@see static\n"
-   )
-{
-   return object->isStatic();
-}
-
-DefineEngineMethod( Gui3DItem, isAtRest, bool, (),, 
-   "@brief Is the object at rest (ie, no longer moving)?\n\n"   
-   "@return True if the object is at rest, false if it is not.\n"
-   "@tsexample\n"
-	   "// Query the item on if it is or is not at rest.\n"
-	   "%isAtRest = %item.isAtRest();\n\n"
-   "@endtsexample\n\n"
-   )
-{
-   return object->isAtRest();
-}
-
-DefineEngineMethod( Gui3DItem, isRotating, bool, (),, 
-   "@brief Is the object still rotating?\n\n"   
-   "@return True if the object is still rotating, false if it is not.\n"
-   "@tsexample\n"
-	   "// Query the item on if it is or is not rotating.\n"
-	   "%isRotating = %itemData.isRotating();\n\n"
-   "@endtsexample\n\n"
-   "@see rotate\n"
-   )
-{
-   return object->isRotating();
-}
-
-DefineEngineMethod( Gui3DItem, setCollisionTimeout, bool, (S32 ignoreColObj),(NULL), 
-   "@brief Temporarily disable collisions against a specific ShapeBase object.\n\n"
-
-   "This is useful to prevent a player from immediately picking up an Gui3DItem they have "
-   "just thrown.  Only one object may be on the timeout list at a time.  The timeout is "
-   "defined as 15 ticks.\n\n"
-
-   "@param objectID ShapeBase object ID to disable collisions against.\n"
-   "@return Returns true if the ShapeBase object requested could be found, false if it could not.\n"
-
-   "@tsexample\n"
-	   "// Set the ShapeBase Object ID to disable collisions against\n"
-	   "%ignoreColObj = %player.getID();\n\n"
-	   "// Inform this Gui3DItem object to ignore collisions temproarily against the %ignoreColObj.\n"
-	   "%item.setCollisionTimeout(%ignoreColObj);\n\n"
-   "@endtsexample\n\n"
-   )
-{
-   ShapeBase* source = NULL;
-   if (Sim::findObject(ignoreColObj,source)) {
-      object->setCollisionTimeout(source);
-      return true;
-   }
-   return false;
-}
-
-
-DefineEngineMethod( Gui3DItem, getLastStickyPos, const char*, (),, 
-   "@brief Get the position on the surface on which this Gui3DItem is stuck.\n\n"   
-   "@return Returns The XYZ position of where this Gui3DItem is stuck.\n"
-   "@tsexample\n"
-	   "// Acquire the position where this Gui3DItem is currently stuck\n"
-	   "%stuckPosition = %item.getLastStickPos();\n\n"
-   "@endtsexample\n\n"
-   "@note Server side only.\n"
-   )
-{
-   static const U32 bufSize = 256;
-   char* ret = Con::getReturnBuffer(bufSize);
-   if (object->isServerObject())
-      dSprintf(ret, bufSize, "%g %g %g",
-               object->mStickyCollisionPos.x,
-               object->mStickyCollisionPos.y,
-               object->mStickyCollisionPos.z);
-   else
-      dStrcpy(ret, "0 0 0");
-
-   return ret;
-}
-
-DefineEngineMethod( Gui3DItem, getLastStickyNormal, const char *, (),, 
-   "@brief Get the normal of the surface on which the object is stuck.\n\n"   
-   "@return Returns The XYZ normal from where this Gui3DItem is stuck.\n"
-   "@tsexample\n"
-	   "// Acquire the position where this Gui3DItem is currently stuck\n"
-	   "%stuckPosition = %item.getLastStickPos();\n\n"
-   "@endtsexample\n\n"
-   "@note Server side only.\n"
-   )
-{
-   static const U32 bufSize = 256;
-   char* ret = Con::getReturnBuffer(bufSize);
-   if (object->isServerObject())
-      dSprintf(ret, bufSize, "%g %g %g",
-               object->mStickyCollisionNormal.x,
-               object->mStickyCollisionNormal.y,
-               object->mStickyCollisionNormal.z);
-   else
-      dStrcpy(ret, "0 0 0");
-
-   return ret;
-}
 
 //----------------------------------------------------------------------------
 
-bool Gui3DItem::_setStatic(void *object, const char *index, const char *data)
+bool Gui3DItem::_setAddX(void *object, const char *index, const char *data)
 {
    Gui3DItem *i = static_cast<Gui3DItem*>(object);
-   i->mAtRest = dAtob(data);
+   i->addX = dAtof(data);
    i->setMaskBits(InitialUpdateMask | PositionMask);
    return true;
 }
 
-bool Gui3DItem::_setRotate(void *object, const char *index, const char *data)
+bool Gui3DItem::_setAddY(void *object, const char *index, const char *data)
 {
    Gui3DItem *i = static_cast<Gui3DItem*>(object);
-   i->setMaskBits(InitialUpdateMask | RotationMask);
+   i->addY = dAtof(data);
+   i->setMaskBits(InitialUpdateMask | PositionMask);
+   return true;
+}
+
+bool Gui3DItem::_setAddZ(void *object, const char *index, const char *data)
+{
+   Gui3DItem *i = static_cast<Gui3DItem*>(object);
+   i->addZ = dAtof(data);
+   i->setMaskBits(InitialUpdateMask | PositionMask);
    return true;
 }
 
 void Gui3DItem::initPersistFields()
 {
    addGroup("Misc");	
-   addProtectedField("static", TypeBool, Offset(mStatic, Gui3DItem), &_setStatic, &defaultProtectedGetFn, "If true, the object is not moving in the world.\n");
-   addProtectedField("addX", TypeF32, Offset(addX, Gui3DItem), &_setRotate, &defaultProtectedGetFn, "Sets X position of compass\n");
-   addProtectedField("addY", TypeF32, Offset(addY, Gui3DItem), &_setRotate, &defaultProtectedGetFn, "Sets Y position of compass\n");
-   addProtectedField("addZ", TypeF32, Offset(addZ, Gui3DItem), &_setRotate, &defaultProtectedGetFn, "Sets Z position of compass\n");
+
+   addProtectedField("addX", TypeF32, Offset(addX, Gui3DItem), &_setAddX, &defaultProtectedGetFn, "Sets X position of compass\n");
+   addProtectedField("addY", TypeF32, Offset(addY, Gui3DItem), &_setAddY, &defaultProtectedGetFn, "Sets Y position of compass\n");
+   addProtectedField("addZ", TypeF32, Offset(addZ, Gui3DItem), &_setAddZ, &defaultProtectedGetFn, "Sets Z position of compass\n");
    endGroup("Misc");
 
    Parent::initPersistFields();
