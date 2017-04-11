@@ -537,19 +537,6 @@ U32 Gui3DItem::packUpdate(NetConnection *connection, U32 mask, BitStream *stream
    else
       stream->writeFlag(false);
 
-   if (stream->writeFlag(mask & RotationMask)) {
-
-   }
-
-   if (stream->writeFlag(mask & PositionMask)) {
-      Point3F pos;
-      mObjToWorld.getColumn(3,&pos);
-      mathWrite(*stream, pos);
-      if (!stream->writeFlag(mAtRest)) {
-         mathWrite(*stream, mVelocity);
-      }
-      stream->writeFlag(!(mask & NoWarpMask));
-   }
    return retMask;
 }
 
@@ -574,31 +561,6 @@ void Gui3DItem::unpackUpdate(NetConnection *connection, BitStream *stream)
    }
 
    MatrixF mat = mObjToWorld;
-
-   // RotationMask
-   if (stream->readFlag()) {
-      // Assumes rotation is about the Z axis
-   }
-
-   // PositionMask
-   if (stream->readFlag()) {
-      Point3F pos;
-      mathRead(*stream, &pos);
-      F32 speed = mVelocity.len();
-      if ((mAtRest = stream->readFlag()) == true)
-         mVelocity.set(0.0f, 0.0f, 0.0f);
-      else
-         mathRead(*stream, &mVelocity);
-
-      if (stream->readFlag() && isProperlyAdded()) {
-
-      }
-      else {
-
-         mat.setColumn(3,pos);
-      }
-   }
-   Parent::setTransform(mat);
 }
 
 DefineEngineMethod( Gui3DItem, isStatic, bool, (),, 
