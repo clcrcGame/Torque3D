@@ -523,12 +523,6 @@ U32 Gui3DItem::packUpdate(NetConnection *connection, U32 mask, BitStream *stream
 {
    U32 retMask = Parent::packUpdate(connection,mask,stream);
 
-   if (stream->writeFlag(mask & InitialUpdateMask)) {
-      stream->writeFlag(mStatic);
-      if (stream->writeFlag(getScale() != Point3F(1, 1, 1)))
-         mathWrite(*stream, getScale());
-   }
-
    if (mask & ThrowSrcMask && mCollisionObject) {
       S32 gIndex = connection->getGhostIndex(mCollisionObject);
       if (stream->writeFlag(gIndex != -1))
@@ -543,16 +537,6 @@ U32 Gui3DItem::packUpdate(NetConnection *connection, U32 mask, BitStream *stream
 void Gui3DItem::unpackUpdate(NetConnection *connection, BitStream *stream)
 {
    Parent::unpackUpdate(connection,stream);
-
-   // InitialUpdateMask
-   if (stream->readFlag()) {
-
-      mStatic = stream->readFlag();
-      if (stream->readFlag())
-         mathRead(*stream, &mObjScale);
-      else
-         mObjScale.set(1, 1, 1);
-   }
 
    // ThrowSrcMask && mCollisionObject
    if (stream->readFlag()) {
