@@ -444,7 +444,7 @@ void Gui3DItem::processTick(const Move* move)
       return;  
 
    //Move compass to the player
-   control->getEyeTransform(&matrix);
+   matrix = control->getTransform();
 
    tmp = matrix.getPosition();
 
@@ -461,6 +461,7 @@ void Gui3DItem::processTick(const Move* move)
    tmp.z += tmp_vect.z;
 
    matrix.setPosition(tmp);
+
    setTransform(matrix);  
 }
 
@@ -518,12 +519,24 @@ U32 Gui3DItem::packUpdate(NetConnection *connection, U32 mask, BitStream *stream
 {
    U32 retMask = Parent::packUpdate(connection,mask,stream);
 
+   if (stream->writeFlag(mask & InitialUpdateMask)) {
+      stream->writeRangedF32(addX, 0.0f, 10.0f, 10);
+      stream->writeRangedF32(addY, 0.0f, 10.0f, 10);
+      stream->writeRangedF32(addZ, 0.0f, 10.0f, 10);
+   }
+
    return retMask;
 }
 
 void Gui3DItem::unpackUpdate(NetConnection *connection, BitStream *stream)
 {
    Parent::unpackUpdate(connection,stream);
+
+   if (stream->readFlag()) {
+      addX = stream->readRangedF32(0.0f, 10.0f, 10);
+      addY = stream->readRangedF32(0.0f, 10.0f, 10);
+      addZ = stream->readRangedF32(0.0f, 10.0f, 10);
+   }
 }
 
 
@@ -567,13 +580,7 @@ void Gui3DItem::initPersistFields()
 
 void Gui3DItem::consoleInit()
 {
-   Con::addVariable("Gui3DItem::minWarpTicks",TypeF32,&sMinWarpTicks,
-      "@brief Fraction of tick at which instant warp occures on the client.\n\n"
-	   "@ingroup GameObjects");
-   Con::addVariable("Gui3DItem::maxWarpTicks",TypeS32,&sMaxWarpTicks, 
-      "@brief When a warp needs to occur due to the client being too far off from the server, this is the "
-      "maximum number of ticks we'll allow the client to warp to catch up.\n\n"
-	   "@ingroup GameObjects");
+
 }
 
 //----------------------------------------------------------------------------
@@ -591,6 +598,5 @@ void Gui3DItem::buildConvex(const Box3F& box, Convex* convex)
 void Gui3DItem::advanceTime(F32 dt)
 {
    Parent::advanceTime(dt);
-   if ( isMounted() )
-      return;
+
 }

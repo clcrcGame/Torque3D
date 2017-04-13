@@ -41,9 +41,9 @@ echo("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    new Gui3DItem(FSCompass) {
 		static = true;
 	        dataBlock = "Compass";
-		AddX = "0.0";
-		AddY = "0.4";
-		AddZ = "-0.1";
+		addX = "0.0";
+		addY = "0.2";
+		addZ = "1.35";
    };
 }
 
