@@ -426,9 +426,11 @@ void Gui3DItem::processTick(const Move* move)
 {
    GameConnection* conn = GameConnection::getConnectionToServer();
    MatrixF matrix;
+   MatrixF rotMatrix;
    ShapeBase* control;
    Point3F tmp;
    VectorF tmp_vect;
+   VectorF rot;
 
    Parent::processTick(move);
 
@@ -454,13 +456,24 @@ void Gui3DItem::processTick(const Move* move)
    tmp_vect.y = addY;
    tmp_vect.z = addZ;
 
+   rot.x = 1.0f;
+   rot.y = 1.0f;
+   rot.z = 1.0f;
+
    matrix.mulP(tmp_vect);
+   matrix.mulP(rot);
 
    tmp.x += tmp_vect.x;
    tmp.y += tmp_vect.y;
    tmp.z += tmp_vect.z;
 
    matrix.setPosition(tmp);
+
+   rotMatrix.set(EulerF(0.0, 0.0, 0.0));
+   matrix.mul(rotMatrix);
+
+   rotMatrix.set(EulerF(0.0, 0.0, mAtan2(rot.y, rot.x) - mDegToRad(45.0)));
+   matrix.mul(rotMatrix);
 
    setTransform(matrix);  
 }
