@@ -421,10 +421,10 @@ void Gui3DItem::setCollisionTimeout(ShapeBase* obj)
 
 
 //----------------------------------------------------------------------------
-
+#include <iostream>
 void Gui3DItem::processTick(const Move* move)
 {
-   GameConnection* conn = GameConnection::getConnectionToServer();
+   GameConnection* conn;
    MatrixF matrix;
    MatrixF rotMatrix;
    ShapeBase* control;
@@ -432,10 +432,12 @@ void Gui3DItem::processTick(const Move* move)
    VectorF tmp_vect;
    VectorF rot;
 
-   Parent::processTick(move);
-
-   if ( isMounted() )
+   if ( isServerObject() )
       return;
+
+   conn = GameConnection::getConnectionToServer();
+
+   Parent::processTick(move);
 
    if (!conn)
        return;
@@ -475,7 +477,12 @@ void Gui3DItem::processTick(const Move* move)
    rotMatrix.set(EulerF(0.0, 0.0, mAtan2(rot.y, rot.x) - mDegToRad(45.0)));
    matrix.mul(rotMatrix);
 
-   setTransform(matrix);  
+   setTransform(matrix); 
+ 
+   if (isServerObject())
+      std::cout << "This is server object.\n";
+   else
+      std::cout << "This is client obj.\n";	 
 }
 
 void Gui3DItem::interpolateTick(F32 dt)

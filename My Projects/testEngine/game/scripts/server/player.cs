@@ -33,18 +33,9 @@ function PlayerData::onAdd(%this, %obj)
    // Vehicle timeout
    %obj.mountVehicle = true;
 
-echo("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n\n\n\n\n\n\n\n\n\n\n");
    // Default dynamic armor stats
    %obj.setRechargeRate(%this.rechargeRate);
    %obj.setRepairRate(0);
-
-   new Gui3DItem(FSCompass) {
-		static = true;
-	        dataBlock = "Compass";
-		addX = "0.0";
-		addY = "0.2";
-		addZ = "1.35";
-   };
 }
 
 function PlayerData::onRemove(%this, %obj)
