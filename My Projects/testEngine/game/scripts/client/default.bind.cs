@@ -80,7 +80,7 @@ function doScreenShotHudless(%val)
       canvas.setContent(PlayGui);
 }
 
-moveMap.bind(keyboard, "alt p", doScreenShotHudless);
+//moveMap.bind(keyboard, "alt p", doScreenShotHudless);
 
 //------------------------------------------------------------------------------
 // Movement Keys
@@ -548,6 +548,18 @@ moveMap.bind(keyboard, q, nextWeapon);
 moveMap.bind(keyboard, "ctrl q", prevWeapon);
 moveMap.bind(mouse, "zaxis", mouseWheelWeaponCycle);
 
+function getIn()
+{
+	%player = LocalClientConnection.getControlObject();
+	if (%player.getClassName() $= "Player") {
+		moveMap.pop();
+		vehicleMap.push();
+	}
+	commandToServer('mountVehicle');
+}
+
+moveMap.bindCmd(keyboard, "enter", "getIn();", "");
+
 //------------------------------------------------------------------------------
 // Message HUD functions
 //------------------------------------------------------------------------------
@@ -753,10 +765,6 @@ function carjack()
    }
 }
 
-// Bind the keys to the carjack command
-moveMap.bindCmd(keyboard, "ctrl z", "carjack();", "");
-
-
 // Starting vehicle action map code
 if ( isObject( vehicleMap ) )
    vehicleMap.delete();
@@ -792,7 +800,7 @@ vehicleMap.bind( mouse, xaxis, yaw );
 vehicleMap.bind( mouse, yaxis, pitch );
 vehicleMap.bind( mouse, button0, mouseFire );
 vehicleMap.bind( mouse, button1, altTrigger );
-vehicleMap.bindCmd(keyboard, "ctrl f","getout();","");
+vehicleMap.bindCmd(keyboard, "enter","getout();","");
 vehicleMap.bind(keyboard, space, brake);
 vehicleMap.bindCmd(keyboard, "l", "brakeLights();", "");
 vehicleMap.bindCmd(keyboard, "escape", "", "handleEscape();");
