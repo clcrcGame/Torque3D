@@ -103,6 +103,7 @@ function initClient()
    exec("./game.cs");
    exec("./missionDownload.cs");
    exec("./serverConnection.cs");
+   exec("./interact.cs");
 
    // Load useful Materials
    exec("./shaders.cs");

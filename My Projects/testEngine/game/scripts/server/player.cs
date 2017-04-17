@@ -163,29 +163,6 @@ function PlayerData::onCollision(%this, %obj, %col)
       %obj.pickup(%col);
       return;
    }
-
-   // Mount vehicles
-   if (%col.getType() & $TypeMasks::GameBaseObjectType)
-   {
-      %db = %col.getDataBlock();
-      if ((%db.getClassName() $= "WheeledVehicleData" ) && %obj.mountVehicle && %obj.getState() $= "Move" && %col.mountable)
-      {
-         // Only mount drivers for now.
-         ServerConnection.setFirstPerson(0);
-         
-         // For this specific example, only one person can fit
-         // into a vehicle
-         %mount = %col.getMountNodeObject(0);         
-         if(%mount)
-            return;
-         
-         // For this specific FPS Example, always mount the player
-         // to node 0
-         %node = 0;
-         %col.mountObject(%obj, %node);
-         %obj.mVehicle = %col;
-      }
-   }
 }
 
 function PlayerData::onImpact(%this, %obj, %collidedObject, %vec, %vecLen)

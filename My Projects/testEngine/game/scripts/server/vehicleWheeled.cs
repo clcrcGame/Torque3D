@@ -100,3 +100,34 @@ function serverCmddismountVehicle(%client)
    
    %client.setControlObject(%client.player);
 }
+
+function serverCmdmountVehicle(%client)
+{
+   %player = %client.player;
+   %obj = %player.getPointedObject();
+
+   // Mount vehicles
+   if (%obj.getType() & $TypeMasks::GameBaseObjectType)
+   {
+      %db = %obj.getDataBlock();
+
+      if ((%db.getClassName() $= "WheeledVehicleData") && %obj.mountable &&
+	  %player.mountVehicle)
+      {
+         // Only mount drivers for now.
+         ServerConnection.setFirstPerson(0);
+         
+         // For this specific example, only one person can fit
+         // into a vehicle
+         %mount = %obj.getMountNodeObject(0);         
+         if(%mount)
+            return;
+         
+         // For this specific FPS Example, always mount the player
+         // to node 0
+         %node = 0;
+         %obj.mountObject(%player, %node);
+         %player.mVehicle = %obj;
+      }
+   }
+}
