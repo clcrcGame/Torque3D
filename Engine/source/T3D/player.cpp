@@ -6695,6 +6695,14 @@ DefineEngineMethod( Player, getControlObject, S32, (),,
    return controlObject ? controlObject->getId(): 0;
 }
 
+DefineEngineMethod( Player, getPointedObject, S32, (),,
+   "@brief Get the object we are looking at.\n\n"
+   "@return ID of the pointed ShapeBase object\n")
+{
+   ShapeBase* pointedObject = object->getPointedObject();
+   return pointedObject ? pointedObject->getId(): 0;
+}
+
 DefineEngineMethod( Player, clearControlObject, void, (),,
    "@brief Clears the player's current control object.\n\n"
    "Returns control to the player. This internally calls "
@@ -7206,3 +7214,43 @@ ConsoleMethod(Player, setVRControllers, void, 4, 4, "")
 }
 
 #endif
+
+//copied from guiCrossHairHud.cpp
+ShapeBase* Player::getPointedObject()
+{
+   U32 ObjectMask = PlayerObjectType | VehicleObjectType;
+  
+   ShapeBase *sb = NULL;
+
+   // Get client eye transform
+   MatrixF cam;
+   Point3F camPos;
+   getEyeTransform(&cam);
+   cam.getColumn(3, &camPos);
+
+   // Extend the eye vector to create an endpoint for our ray
+   Point3F endPos;
+   cam.getColumn(1, &endPos);
+   //endPos *= gClientSceneGraph->getVisibleDistance();
+   endPos *= 1.0f; //TODO 1 meter? 1 what? whats the unit of distance?
+   endPos += camPos;
+
+
+   // Collision info. We're going to be running LOS tests and we
+   // don't want to collide with the control object.
+   static U32 losMask = TerrainObjectType | ShapeBaseObjectType;
+   disableCollision();
+
+   RayInfo info;
+   if (gServerContainer.castRay(camPos, endPos, losMask, &info)) {
+      // Hit something... Could mask against the object type here
+      // and do a static cast if it's a ShapeBaseObjectType, but this
+      // isn't a performance situation, so I'll just use dynamic_cast.
+      sb = dynamic_cast<ShapeBase*>(info.object);
+   }
+
+   // Restore control object collision
+   enableCollision();
+
+   return sb;
+}
