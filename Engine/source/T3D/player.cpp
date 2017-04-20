@@ -7232,7 +7232,8 @@ ShapeBase* Player::getPointedObject()
    Point3F endPos;
    cam.getColumn(1, &endPos);
    //endPos *= gClientSceneGraph->getVisibleDistance();
-   endPos *= 1.0f; //TODO 1 meter? 1 what? whats the unit of distance?
+
+   endPos *= 3.0f; //TODO 3 meters from vehicle
    endPos += camPos;
 
 
