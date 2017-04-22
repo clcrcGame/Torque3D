@@ -1144,6 +1144,16 @@ void WheeledVehicle::extendWheels(bool clientHack)
    Wheel* wend = &mWheel[mDataBlock->wheelCount];
    for (Wheel* wheel = mWheel; wheel < wend; wheel++) 
    {
+      TSShapeInstance *shapeInstance = wheel->shapeInstance;
+      TSShape *shape;
+      F32 offset = 0.0f;
+      
+      if (shapeInstance) {
+         shape = shapeInstance->getShape();
+         if (shape)
+      	    offset = shape->bounds.len_x() / 2.0f;
+      }
+
       if (wheel->tire && wheel->spring) 
       {
          wheel->extension = 1;
@@ -1153,10 +1163,11 @@ void WheeledVehicle::extendWheels(bool clientHack)
          // adjust to remove the tire radius.
          Point3F sp,vec;
          currMatrix.mulP(wheel->data->pos,&sp);
-         currMatrix.mulV(VectorF(0,0,-wheel->spring->length),&vec);
+         currMatrix.mulV(VectorF(0, 0, -wheel->spring->length), &vec);
          F32 ts = wheel->tire->radius / wheel->spring->length;
          Point3F ep = sp + (vec * (1 + ts));
-         ts = ts / (1+ts);
+	 ep.x += offset;
+         ts = ts / (1 + ts);
 
          RayInfo rInfo;
          if (mContainer->castRay(sp, ep, sClientCollisionMask & ~PlayerObjectType, &rInfo)) 
