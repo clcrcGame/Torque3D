@@ -1130,47 +1130,17 @@ void WheeledVehicle::extendWheels(bool clientHack)
 
    disableCollision();
 
-   MatrixF currMatrix;
-   
-   if(clientHack)
-      currMatrix = getRenderTransform();
-   else
-      mRigid.getTransform(&currMatrix);
-   
-
    // Does a single ray cast down for now... this will have to be
    // changed to something a little more complicated to avoid getting
    // stuck in cracks.
    Wheel* wend = &mWheel[mDataBlock->wheelCount];
    for (Wheel* wheel = mWheel; wheel < wend; wheel++) 
    {
-      TSShapeInstance *shapeInstance = wheel->shapeInstance;
-      TSShape *shape;
-      F32 offset = 0.0f;
-      
-      if (shapeInstance) {
-         shape = shapeInstance->getShape();
-         if (shape)
-      	    offset = shape->bounds.len_x() / 2.0f;
-      }
-
+      F32 ts;
+      RayInfo rInfo;
       if (wheel->tire && wheel->spring) 
       {
-         wheel->extension = 1;
-
-         // The ray is cast from the spring mount point to the tip of
-         // the tire.  If there is a collision the spring extension is
-         // adjust to remove the tire radius.
-         Point3F sp,vec;
-         currMatrix.mulP(wheel->data->pos,&sp);
-         currMatrix.mulV(VectorF(0, 0, -wheel->spring->length), &vec);
-         F32 ts = wheel->tire->radius / wheel->spring->length;
-         Point3F ep = sp + (vec * (1 + ts));
-	 ep.x += offset;
-         ts = ts / (1 + ts);
-
-         RayInfo rInfo;
-         if (mContainer->castRay(sp, ep, sClientCollisionMask & ~PlayerObjectType, &rInfo)) 
+         if (checkWheelContact(clientHack, wheel, &rInfo, &ts)) 
          {
             wheel->surface.contact  = true;
             wheel->extension = (rInfo.t < ts)? 0: (rInfo.t - ts) / (1 - ts);
@@ -1189,6 +1159,40 @@ void WheeledVehicle::extendWheels(bool clientHack)
    enableCollision();
 }
 
+bool WheeledVehicle::checkWheelContact(bool clientHack, Wheel *wheel, 
+					RayInfo *rInfo, F32 *ts)
+{
+   MatrixF currMatrix;
+   
+   if(clientHack)
+      currMatrix = getRenderTransform();
+   else
+   mRigid.getTransform(&currMatrix);
+   TSShapeInstance *shapeInstance = wheel->shapeInstance;
+   TSShape *shape;
+   F32 offset = 0.0f;
+   
+   if (shapeInstance) {
+      shape = shapeInstance->getShape();
+      if (shape)
+   	    offset = shape->bounds.len_x() / 2.0f;
+   }
+
+   wheel->extension = 1;
+
+   // The ray is cast from the spring mount point to the tip of
+   // the tire.  If there is a collision the spring extension is
+   // adjust to remove the tire radius.
+   Point3F sp,vec;
+   currMatrix.mulP(wheel->data->pos,&sp);
+   currMatrix.mulV(VectorF(0, 0, -wheel->spring->length), &vec);
+   *ts = wheel->tire->radius / wheel->spring->length;
+   Point3F ep = sp + (vec * (1 + *ts));
+   ep.x += offset;
+   *ts = *ts / (1 + *ts);
+
+   return mContainer->castRay(sp, ep, sClientCollisionMask & ~PlayerObjectType, rInfo);
+}
 
 //----------------------------------------------------------------------------
 /** Update wheel steering and suspension threads.

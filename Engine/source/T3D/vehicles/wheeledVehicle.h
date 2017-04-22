@@ -208,6 +208,7 @@ class WheeledVehicle: public Vehicle
    void updateMove(const Move *move);
    void updateForces(F32 dt);
    void extendWheels(bool clientHack = false);
+   bool checkWheelContact(bool clientHack, Wheel *wheel, RayInfo *rInfo, F32 *ts);
    void prepBatchRender( SceneRenderState *state, S32 mountedImageIndex );
 
    // Client sounds & particles
