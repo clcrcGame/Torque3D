@@ -1167,15 +1167,21 @@ bool WheeledVehicle::checkWheelContact(bool clientHack, Wheel *wheel,
    if(clientHack)
       currMatrix = getRenderTransform();
    else
-   mRigid.getTransform(&currMatrix);
+      mRigid.getTransform(&currMatrix);
+
    TSShapeInstance *shapeInstance = wheel->shapeInstance;
    TSShape *shape;
    F32 offset = 0.0f;
    
    if (shapeInstance) {
+     
       shape = shapeInstance->getShape();
       if (shape)
    	    offset = shape->bounds.len_x() / 2.0f;
+      
+      if (wheel->data->pos.x < 0.0f)
+	offset *= -1.0f;
+
    }
 
    wheel->extension = 1;
@@ -1185,10 +1191,10 @@ bool WheeledVehicle::checkWheelContact(bool clientHack, Wheel *wheel,
    // adjust to remove the tire radius.
    Point3F sp,vec;
    currMatrix.mulP(wheel->data->pos,&sp);
-   currMatrix.mulV(VectorF(0, 0, -wheel->spring->length), &vec);
+   currMatrix.mulV(VectorF(offset, 0, -wheel->spring->length), &vec);
    *ts = wheel->tire->radius / wheel->spring->length;
-   Point3F ep = sp + (vec * (1 + *ts));
-   ep.x += offset;
+   Point3F ep = sp + vec;
+   ep.z += vec.z * (*ts);
    *ts = *ts / (1 + *ts);
 
    return mContainer->castRay(sp, ep, sClientCollisionMask & ~PlayerObjectType, rInfo);
