@@ -1163,7 +1163,10 @@ bool WheeledVehicle::checkWheelContact(bool clientHack, Wheel *wheel,
 					RayInfo *rInfo, F32 *ts)
 {
    MatrixF currMatrix;
-   
+   Point3F sp, ep;
+   F32 offset = 0.0f;
+   F32 deltaOffset = 0.0f; 
+
    if(clientHack)
       currMatrix = getRenderTransform();
    else
@@ -1171,17 +1174,20 @@ bool WheeledVehicle::checkWheelContact(bool clientHack, Wheel *wheel,
 
    TSShapeInstance *shapeInstance = wheel->shapeInstance;
    TSShape *shape;
-   F32 offset = 0.0f;
+
    
    if (shapeInstance) {
      
       shape = shapeInstance->getShape();
       if (shape)
    	    offset = shape->bounds.len_x() / 2.0f;
-      
+     
+      //wheel->data->pos.x < 0.0f == wheels on left side of Vehicle 
       if (wheel->data->pos.x < 0.0f)
 	offset *= -1.0f;
 
+      //deltaOffset is used in for loop.
+      deltaOffset = offset * -1.0f;
    }
 
    wheel->extension = 1;
@@ -1189,15 +1195,24 @@ bool WheeledVehicle::checkWheelContact(bool clientHack, Wheel *wheel,
    // The ray is cast from the spring mount point to the tip of
    // the tire.  If there is a collision the spring extension is
    // adjust to remove the tire radius.
-   Point3F sp,vec;
-   currMatrix.mulP(wheel->data->pos,&sp);
-   currMatrix.mulV(VectorF(offset, 0, -wheel->spring->length), &vec);
-   *ts = wheel->tire->radius / wheel->spring->length;
-   Point3F ep = sp + vec;
-   ep.z += vec.z * (*ts);
-   *ts = *ts / (1 + *ts);
 
-   return mContainer->castRay(sp, ep, sClientCollisionMask & ~PlayerObjectType, rInfo);
+   currMatrix.mulP(wheel->data->pos,&sp);
+
+   //This loop exists because we want to check 3 different places of wheel, which may
+   //contact surface. This is achieved with "(F32)i * deltaOffset" formula.
+   for (int i = 0; i < 3; i++) {
+      Point3F vec;
+      currMatrix.mulV(VectorF(offset + ((F32)i) * deltaOffset, 0, -wheel->spring->length), &vec);
+      *ts = wheel->tire->radius / wheel->spring->length;
+      ep = sp + vec;
+      ep.z += vec.z * (*ts);
+      *ts = *ts / (1 + *ts);
+
+      if (mContainer->castRay(sp, ep, sClientCollisionMask & ~PlayerObjectType, rInfo))
+         return true;
+   }
+
+   return false;
 }
 
 //----------------------------------------------------------------------------
