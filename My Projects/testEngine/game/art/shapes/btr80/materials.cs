@@ -6,6 +6,7 @@ singleton Material(body_Material__10156)
    specular[0] = "0.0228315 0.0228315 0.0228315 1";
    specularPower[0] = "50";
    translucentBlendOp = "None";
+   castDynamicShadows = "1";
 };
 
 singleton Material(body_Material__10158)
@@ -15,16 +16,17 @@ singleton Material(body_Material__10158)
    specular[0] = "0.22451 0.22451 0.22451 1";
    specularPower[0] = "50";
    translucentBlendOp = "None";
+   castDynamicShadows = "1";
 };
 
-singleton Material(wheel_Material__10157)
+singleton Material(wheel_BTR_Wheels)
 {
-   mapTo = "Material__10157";
+   mapTo = "BTR_Wheels";
    diffuseColor[0] = "0.467451 0.467451 0.467451 1";
-   specular[0] = "0.5 0.5 0.5 1";
+   specular[0] = "1 1 1 1";
    specularPower[0] = "50";
    translucentBlendOp = "None";
-   diffuseMap[0] = "art/shapes/Cheetah/Cheetah_D.dds";
+   castDynamicShadows = "1";
 };
 
 singleton Material(wheel_BTR_Wheels)
