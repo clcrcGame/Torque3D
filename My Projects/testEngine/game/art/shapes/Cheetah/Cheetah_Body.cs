@@ -34,14 +34,14 @@ function CheetahDAE::onLoad(%this)
 {
    %this.setSequenceCyclic("ambient", "0");
    %this.renameSequence("ambient", "timeline");
-   %this.addSequence("timeline", "root", "0", "1");
-   %this.addSequence("timeline", "spring0", "10", "11");
-   %this.addSequence("timeline", "spring1", "20", "21");
-   %this.addSequence("timeline", "spring2", "30", "31");
-   %this.addSequence("timeline", "spring3", "40", "41");
-   %this.addSequence("timeline", "brakeLight", "50", "51");
+   %this.addSequence("timeline", "root", "0", "1", "1", "0");
+   %this.addSequence("timeline", "spring0", "10", "11", "1", "0");
+   %this.addSequence("timeline", "spring1", "20", "21", "1", "0");
+   %this.addSequence("timeline", "spring2", "30", "31", "1", "0");
+   %this.addSequence("timeline", "spring3", "40", "41", "1", "0");
+   %this.addSequence("timeline", "brakeLight", "50", "51", "1", "0");
    %this.setSequencePriority("brakeLight", "8");
-   %this.setNodeTransform("cam", "5.46934e-008 -4.75632 2.89171 -0.404897 0.817636 0.409303 1.71107", "1");
+   %this.setNodeTransform("cam", "5.46934e-08 -4.75632 2.89171 -0.404897 0.817636 0.409303 1.71107", "1");
    %this.removeNode("CheetahMesh300");
    %this.removeNode("CheetahMesh200");
    %this.removeNode("CheetahMesh100");
@@ -51,4 +51,5 @@ function CheetahDAE::onLoad(%this)
    %this.removeNode("TailLightsMesh100");
    %this.removeNode("TailLightsMesh2");
    %this.removeNode("nulldetail1");
+   %this.setBounds("-1.97346 -3.11951 0.319504 1.97384 4.06117 3.03289");
 }

@@ -20,42 +20,21 @@
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
-datablock SFXProfile(cheetahEngine)
+datablock SFXProfile(BTREngine)
 {
    preload = "1";
    description = "AudioCloseLoop3D";
    fileName = "art/sound/cheetah/cheetah_engine.ogg";
 };
 
-datablock SFXProfile(cheetahSqueal)
+datablock SFXProfile(BTRSqueal)
 {
    preload = "1";
    description = "AudioDefault3D";
    fileName = "art/sound/cheetah/cheetah_squeal.ogg";
 };
 
-datablock SFXProfile(hardImpact)
-{
-   preload = "1";
-   description = "AudioDefault3D";
-   fileName = "art/sound/cheetah/hardImpact.ogg";
-};
-
-datablock SFXProfile(softImpact)
-{
-   preload = "1";
-   description = "AudioDefault3D";
-   fileName = "art/sound/cheetah/softImpact.ogg";
-};
-
-datablock SFXProfile(DirtKickup)
-{
-   preload = "1";
-   description = "AudioDefault3D";
-   fileName = "art/sound/cheetah/softImpact.ogg";
-};
-
-datablock SFXProfile(CheetahTurretFireSound)
+datablock SFXProfile(BTRTurretFireSound)
 {
    //filename = "art/sound/cheetah/turret_firing.wav";
    filename = "art/sound/turret/wpn_turret_fire.wav";
@@ -63,7 +42,7 @@ datablock SFXProfile(CheetahTurretFireSound)
    preload = true;
 };
 
-datablock ParticleData(CheetahTireParticle)
+datablock ParticleData(BTRTireParticle)
 {
    textureName          = "art/particles/dustParticle";
    dragCoefficient      = "1.99902";
@@ -84,7 +63,7 @@ datablock ParticleData(CheetahTireParticle)
    times[3]             = "1";
 };
 
-//datablock ParticleEmitterData(CheetahTireEmitter)
+//datablock ParticleEmitterData(BTRTireEmitter)
 //{
 //   ejectionPeriodMS = 20;
 //   periodVarianceMS = 10;
@@ -96,38 +75,11 @@ datablock ParticleData(CheetahTireParticle)
 //   phiReferenceVel  = 0;
 //   phiVariance      = 360;
 //   overrideAdvance = false;
-//   particles = "CheetahTireParticle";
+//   particles = "BTRTireParticle";
 //   blendStyle = "ADDITIVE";
 //};
 
-datablock ProjectileData(TurretProjectile)
-{
-   projectileShapeName = "art/shapes/weapons/shared/rocket.dts";
-   directDamage = 10;
-   radiusDamage = 15;
-   damageRadius = 3;
-   areaImpulse = 1200;
 
-   explosion = RocketLauncherExplosion;
-   waterExplosion = RocketLauncherWaterExplosion;
-
-   decal = ScorchRXDecal;
-   splash = RocketSplash;
-
-   muzzleVelocity = 250;
-   velInheritFactor = 0.7;
-
-   armingDelay = 0;
-   lifetime = 5000;
-   fadeDelay = 4500;
-
-   bounceElasticity = 0;
-   bounceFriction = 0;
-   isBallistic = false;
-   gravityMod = 0.80;
-
-   damageType = "RocketDamage";
-};
 
 //datablock ParticleEmitterData(TurretFireSmokeEmitter)
 //{
@@ -145,110 +97,6 @@ datablock ProjectileData(TurretProjectile)
 //   orientParticles   = "0";
 //};
 
-datablock ShapeBaseImageData(TurretImage)
-{
-   // Basic Item properties
-   shapeFile = "art/shapes/Cheetah/Cheetah_Turret.DAE";
-   emap = true;
-
-   // Specify mount point & offset for 3rd person, and eye offset
-   // for first person rendering.
-   mountPoint = 1;
-   firstPerson = false;
-
-   // When firing from a point offset from the eye, muzzle correction
-   // will adjust the muzzle vector to point to the eye LOS point.
-   // Since this weapon doesn't actually fire from the muzzle point,
-   // we need to turn this off.
-   correctMuzzleVector = false;
-
-   // Add the WeaponImage namespace as a parent, WeaponImage namespace
-   // provides some hooks into the inventory system.
-   className = "WeaponImage";
-   class = "WeaponImage";
-
-   // Projectile and Ammo
-   ammo = BulletAmmo;
-
-   projectile = TurretProjectile;
-   projectileType = Projectile;
-   projectileSpread = "0.01";
-
-   // Weapon lights up while firing
-   lightColor = "0.992126 0.968504 0.708661 1";
-   lightRadius = "4";
-   lightDuration = "100";
-   lightType = "WeaponFireLight";
-   lightBrightness = 2;
-
-   // Shake camera while firing.
-   shakeCamera = false;
-
-   // Images have a state system which controls how the animations
-   // are run, which sounds are played, script callbacks, etc. This
-   // state system is downloaded to the client so that clients can
-   // predict state changes and animate accordingly.  The following
-   // system supports basic ready->fire->reload transitions as
-   // well as a no-ammo->dryfire idle state.
-
-   useRemainderDT = true;
-
-   // Initial start up state
-   stateName[0]                     = "Preactivate";
-   stateTransitionOnLoaded[0]       = "Activate";
-   stateTransitionOnNoAmmo[0]       = "NoAmmo";
-
-   // Activating the gun.  Called when the weapon is first
-   // mounted and there is ammo.
-   stateName[1]                     = "Activate";
-   stateTransitionOnTimeout[1]      = "Ready";
-   stateTimeoutValue[1]             = 0.5;
-   stateSequence[1]                 = "Activate";
-
-   // Ready to fire, just waiting for the trigger
-   stateName[2]                     = "Ready";
-   stateTransitionOnNoAmmo[2]       = "NoAmmo";
-   stateTransitionOnTriggerDown[2]  = "Fire";
-
-   // Fire the weapon. Calls the fire script which does
-   // the actual work.
-   stateName[3]                     = "Fire";
-   stateTransitionOnTimeout[3]      = "Reload";
-   stateTimeoutValue[3]             = 0.1;
-   stateFire[3]                     = true;
-   stateRecoil[3]                   = "";
-   stateAllowImageChange[3]         = false;
-   stateSequence[3]                 = "Fire";
-   stateSequenceRandomFlash[3]      = true;        // use muzzle flash sequence
-   stateScript[3]                   = "onFire";
-   stateSound[3]                    = CheetahTurretFireSound;
-   stateEmitter[3]                  = TurretFireSmokeEmitter;
-   stateEmitterTime[3]              = 0.025;
-
-   // Play the reload animation, and transition into
-   stateName[4]                     = "Reload";
-   stateTransitionOnNoAmmo[4]       = "NoAmmo";
-   stateWaitForTimeout[4]           = "0";
-   stateTransitionOnTimeout[4]      = "Ready";
-   stateTimeoutValue[4]             = 1.2;
-   stateAllowImageChange[4]         = false;
-   stateSequence[4]                 = "Reload";
-   //stateEjectShell[4]               = true;
-
-   // No ammo in the weapon, just idle until something
-   // shows up. Play the dry fire sound if the trigger is
-   // pulled.
-   stateName[5]                     = "NoAmmo";
-   stateTransitionOnAmmo[5]         = "Reload";
-   stateSequence[5]                 = "NoAmmo";
-   stateTransitionOnTriggerDown[5]  = "DryFire";
-
-   // No ammo dry fire
-   stateName[6]                     = "DryFire";
-   stateTimeoutValue[6]             = 1.0;
-   stateTransitionOnTimeout[6]      = "NoAmmo";
-   stateScript[6]                   = "onDryFire";
-};
 
 //-----------------------------------------------------------------------------
 // Information extacted from the shape.
@@ -269,13 +117,13 @@ datablock ShapeBaseImageData(TurretImage)
 // The center of the shape acts as the center of mass for the car.
 
 //-----------------------------------------------------------------------------
-datablock WheeledVehicleTire(CheetahCarTire)
+datablock WheeledVehicleTire(BTRCarTire)
 {
    // Tires act as springs and generate lateral and longitudinal
    // forces to move the vehicle. These distortion/spring forces
    // are what convert wheel angular velocity into forces that
    // act on the rigid body.
-   shapeFile = "art/shapes/Cheetah/wheel.DAE";
+   shapeFile = "art/shapes/btr80/wheel.dae";
    staticFriction = 4.2;
    kineticFriction = "1";
 
@@ -291,13 +139,13 @@ datablock WheeledVehicleTire(CheetahCarTire)
    radius = "0.609998";
 };
 
-datablock WheeledVehicleTire(CheetahCarTireRear)
+datablock WheeledVehicleTire(BTRCarTireRear)
 {
    // Tires act as springs and generate lateral and longitudinal
    // forces to move the vehicle. These distortion/spring forces
    // are what convert wheel angular velocity into forces that
    // act on the rigid body.
-   shapeFile = "art/shapes/Cheetah/wheelBack.DAE";
+   shapeFile = "art/shapes/btr80/wheel.dae";
    staticFriction = "7.2";
    kineticFriction = "1";
 
@@ -313,7 +161,7 @@ datablock WheeledVehicleTire(CheetahCarTireRear)
    radius = "0.840293";
 };
 
-datablock WheeledVehicleSpring(CheetahCarSpring)
+datablock WheeledVehicleSpring(BTRCarSpring)
 {
    // Wheel suspension properties
    length = 0.5;             // Suspension travel
@@ -322,10 +170,10 @@ datablock WheeledVehicleSpring(CheetahCarSpring)
    antiSwayForce = 3;         // Lateral anti-sway force
 };
 
-datablock WheeledVehicleData(CheetahCar)
+datablock WheeledVehicleData(BTRCar)
 {
    category = "Vehicles";
-   shapeFile = "art/shapes/Cheetah/Cheetah_Body.DAE";
+   shapeFile = "art/shapes/btr80/body.dae";
    emap = 1;
 
    mountPose[0] = sitting;
@@ -376,12 +224,12 @@ datablock WheeledVehicleData(CheetahCar)
    hardImpactSound = hardImpact;
 
    // Dynamic fields accessed via script
-   nameTag = 'Cheetah';
+   nameTag = 'BTR';
    maxDismountSpeed = 10;
    maxMountSpeed = 5;
    mountPose0 = "sitting";
-//   tireEmitter = "CheetahTireEmitter";
-//   dustEmitter = "CheetahTireEmitter";
+//   tireEmitter = "BTRTireEmitter";
+//   dustEmitter = "BTRTireEmitter";
 //   dustHeight = "1";
 
    // Mount slots

@@ -25,7 +25,6 @@ singleton TSShapeConstructor(Cheetah_TurretDAE)
    baseShape = "./Cheetah_Turret.DAE";
    lodType = "TrailingNumber";
    neverImport = "null	EnvironmentAmbientLight";
-   matNamePrefix = "";
    forceUpdateMaterials = "0";
    loadLights = "0";
 };

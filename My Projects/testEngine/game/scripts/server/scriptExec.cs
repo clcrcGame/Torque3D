@@ -51,6 +51,7 @@ exec("./aiPlayer.cs");
 exec("./vehicle.cs");
 exec("./vehicleWheeled.cs");
 exec("./cheetah.cs");
+exec("./btr80.cs");
 
 // Load turret support scripts
 exec("./turret.cs");

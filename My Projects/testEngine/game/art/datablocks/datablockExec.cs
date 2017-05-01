@@ -62,6 +62,7 @@ exec("./aiPlayer.cs");
 
 // Load the vehicle datablocks
 exec("./vehicles/cheetahCar.cs");
+exec("./vehicles/btr80.cs");
 
 // Physics objects
 exec("./physics.cs");

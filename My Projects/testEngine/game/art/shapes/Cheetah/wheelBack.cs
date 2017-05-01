@@ -25,7 +25,6 @@ singleton TSShapeConstructor(WheelBackDae)
    baseShape = "./wheelBack.DAE";
    lodType = "TrailingNumber";
    neverImport = "null	EnvironmentAmbientLight";
-   matNamePrefix = "";
    forceUpdateMaterials = "0";
    loadLights = "0";
 };
