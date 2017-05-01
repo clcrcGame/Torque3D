@@ -24,18 +24,10 @@ function BTRCar::onAdd(%this, %obj)
 {
    Parent::onAdd(%this, %obj);
 
-   %obj.setWheelTire(0,BTRCarTire);
-   %obj.setWheelTire(1,BTRCarTire);
-   %obj.setWheelTire(2,BTRCarTire);
-   %obj.setWheelTire(3,BTRCarTire);
-   %obj.setWheelTire(4,BTRCarTire);
-   %obj.setWheelTire(5,BTRCarTire);
-   %obj.setWheelTire(6,BTRCarTire);
-   %obj.setWheelTire(7,BTRCarTire);
-
    // Setup the car with some tires & springs
    for (%i = %obj.getWheelCount() - 1; %i >= 0; %i--)
    {
+      %obj.setWheelTire(%i,BTRCarTire);
       %obj.setWheelPowered(%i, true);
       %obj.setWheelSpring(%i, BTRCarSpring);
    }

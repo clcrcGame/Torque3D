@@ -24,4 +24,23 @@ singleton Material(wheel_Material__10157)
    specular[0] = "0.5 0.5 0.5 1";
    specularPower[0] = "50";
    translucentBlendOp = "None";
+   diffuseMap[0] = "art/shapes/Cheetah/Cheetah_D.dds";
+};
+
+singleton Material(wheel_BTR_Wheels)
+{
+   mapTo = "BTR_Wheels";
+   diffuseColor[0] = "0.467451 0.467451 0.467451 1";
+   specularPower[0] = "10";
+   translucentBlendOp = "None";
+   castDynamicShadows = "1";
+};
+
+singleton Material(wheel_Cheetah2_Main)
+{
+   mapTo = "Cheetah2_Main";
+   diffuseColor[0] = "0.64 0.64 0.64 1";
+   specular[0] = "0.9 0.9 0.9 1";
+   specularPower[0] = "50";
+   translucentBlendOp = "None";
 };
