@@ -550,11 +550,6 @@ moveMap.bind(mouse, "zaxis", mouseWheelWeaponCycle);
 
 function getIn()
 {
-	%player = LocalClientConnection.getControlObject();
-	if (%player.getClassName() $= "Player") {
-		moveMap.pop();
-		vehicleMap.push();
-	}
 	commandToServer('mountVehicle');
 }
 
