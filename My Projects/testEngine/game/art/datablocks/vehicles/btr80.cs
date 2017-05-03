@@ -176,8 +176,8 @@ datablock WheeledVehicleData(BTRCar)
    shapeFile = "art/shapes/btr80/body.dae";
    emap = 1;
 
-   mountPose[0] = sitting;
-   numMountPoints = 6;
+   mountPose[0] = "sitting";
+   numMountPoints = 1;
 
    useEyePoint = true;  // Use the vehicle's camera node rather than the player's
 
@@ -232,8 +232,4 @@ datablock WheeledVehicleData(BTRCar)
 //   dustEmitter = "BTRTireEmitter";
 //   dustHeight = "1";
 
-   // Mount slots
-   turretSlot = 1;
-   rightBrakeSlot = 2;
-   leftBrakeSlot = 3;
 };

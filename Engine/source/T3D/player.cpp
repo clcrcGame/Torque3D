@@ -6153,8 +6153,8 @@ void Player::readPacketData(GameConnection *connection, BitStream *stream)
    if (stream->readFlag()) {
       S32 gIndex = stream->readInt(NetConnection::GhostIdBitSize);
       ShapeBase* obj = static_cast<ShapeBase*>(connection->resolveGhost(gIndex));
-      setControlObject(obj);
       obj->readPacketData(connection, stream);
+      obj->mountObject(this, 0);
    }
    else
       setControlObject(0);

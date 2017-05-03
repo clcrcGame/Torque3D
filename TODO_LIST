@@ -10,4 +10,102 @@ Start 08:45
 
 Start 12:47
 xx:xx - xx:xx bug with rear lights/wheel rotations
+	WheeledVehicle::advanceTime not called when player is in vehicle.
+	It is not called in T3D/std/stdGameProcess.cpp:162
+	(StdClientProcess:advanceTime).
+	What happens when i enter car?
+
+start 19:48, 02.05.2017
+03:12 - 23:00, debugging, nothing found (except that Vehicle::mountObject
+	calls ShapeBase::onMount, and SceneObject::mountObject is called
+	twice). mDataBlock->onMount_callback (player data block) is ok.
+	for (CollisionWorkingList *itr = mConvex..) in Vehicle.cpp has
+	nothing with ProcessList.
+ 	
+start 09:00, 03.05.2017
+04:44 - 13:44, closer debug of ProcessList and ProcessObject.
+		Where does something removes anything from ProcessList/
+		mProcessLink?
+
+		ProcessList::advanceObjects.
+			What list.plLinkBefore(mHead.mProcessLink.next) does?
+				Inserts list ProcessObject before mHead.mProcessLink.next.
+				list is temporary. 
+			What mHead.plUnlink(); does?
+				Removes mHead from it's own list.
+				(mHead unlinked -now it's nowhere).
+			loop:
+			In loop we unlink from previous list to mHead again.
+
+			Can not loop over mHead list (error).
+
+		ProcessList::advanceTime
+			PreTickSignal?
+			mPreTick.trigger()?
+
+		ProcessObject::plJoin - ok
+		ProcessObject::plLinkBefore - ?
+		ProcessObject::plLinkAfter - ?
+		ProcessObject::plUnlink - ?
+
+		0x55555aad07a0 -btr			
+		0x55555f00b9a0 - ?
+		0x55555ef3cc00 - ?
+		0x55555e2f9c70 - ?
+
+		0x55555f00b9a0 - ?
+		0x55555ef3cc00 - ?
+		0x55555e2f9c70 - ?
+		
+		btr is removed from mHead list of StdClientProcessList.
+
+		ANSWER: SceneObject::setProcessTick(bool t) CAUSES IT!!!
+		By why someone would like to BTR->setProcessTick(false)?
+		
+start 13:45, 03.05.2017
+01:52 - 15:37 - Why whould somebody BTR->setProcessTick(false) on vehicle enter?
+		We (client) are controlling the vehicle	and mProcessTick may be used to distinguish it.
+		Each object is either advanced a single tick, or if it's
+		being controlled by a client, ticked once for each pending move.
+
+	
+		Why getMountedObjectCount() returns 0 when no lights?
+		On enter:
+		Player::setControlObject -> ShapeBase::setControllingObject -> 
+		SceneObject->setProcessTick(false) (player should be mounted already)
+
+		SceneObject::mountObject mounts objects (increments mMount count).
+
+		How player enters car:
+		serverCmdmountVehicle
+			Vehicle::mountObject(player, node)
+				SceneObject::mountObject(player, node)
+					player->mMount gets updated.
+					vehicle->mMount also.
+					what with 1085 - 1099?
+					Player/ShapeBase::onMount(vehicle, node)
+						GameBase::onMount(vehicle, node)
+							mDataBlock->onMount_callback 
+							== PlayerData::onMount
+								player.setControlObject(vehicle)!
+								Player::setControlObject
+									Vehicle/
+									ShapeBase::setControllingObject
+														SceneObject::setProcessTick(false)
+
+		Answer: Problem is with Player::readPacketData and setControlObject,
+			which is called twice. 
+			player->mMount and vehicle->mMount are not updated on client.
+
+start 17:00, 03.05.2017
+xx:xx - xx:xx - repair it.
+		replace setControlObject(obj) with obj->mountObject(this, 0)
+		in Player::readPacketData?
+		Well, it works, but is it ok?
+		mMount gets updated so now wheels rotate.
+		But will it be unmounted/undone properly?
+
+		Problem 1: unmounting from vehicle.
+		It's seems to be very messy.
+					
 xx:xx - xx:xx again change spring and mass centre.

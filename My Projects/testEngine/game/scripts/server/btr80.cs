@@ -37,7 +37,7 @@ function BTRCar::onAdd(%this, %obj)
    %obj.setWheelSteering(1, 1);
 
    // Add tail lights
-   %obj.rightBrakeLight = new PointLight() 
+/*   %obj.rightBrakeLight = new PointLight() 
    {
       radius = "1";
       isEnabled = "0";
@@ -71,7 +71,7 @@ function BTRCar::onAdd(%this, %obj)
 
 
    // Mount the brake lights
-   %obj.mountObject(%obj.rightBrakeLight, %this.rightBrakeSlot);
+   %obj.mountObject(%obj.rightBrakeLight, %this.rightBrakeSlot);*/
 
 }
 

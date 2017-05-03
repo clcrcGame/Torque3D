@@ -786,11 +786,12 @@ void WheeledVehicle::updateMove(const Move* move)
       mShapeInstance->setTimeScale(mTailLightThread, mBraking? 1.0f : -1.0f);
 }
 
-
+#include <iostream>
 //----------------------------------------------------------------------------
-
 void WheeledVehicle::advanceTime(F32 dt)
 {
+	static int test = 0;
+	int test2 = 0;
    PROFILE_SCOPE( WheeledVehicle_AdvanceTime );
 
    Parent::advanceTime(dt);
@@ -804,9 +805,15 @@ void WheeledVehicle::advanceTime(F32 dt)
    F32 slipTotal = 0;
    F32 torqueTotal = 0;
 
+
+std::cout << test << std::endl;
+test++;
+
    Wheel* wend = &mWheel[mDataBlock->wheelCount];
-   for (Wheel* wheel = mWheel; wheel < wend; wheel++)
+   for (Wheel* wheel = mWheel; wheel < wend; wheel++) {
       if (wheel->tire && wheel->spring) {
+	std::cout << test2 << std::endl;
+	test2++;
          // Update angular position
          wheel->apos += (wheel->avel * dt) / M_2PI;
          wheel->apos -= mFloor(wheel->apos);
@@ -817,6 +824,7 @@ void WheeledVehicle::advanceTime(F32 dt)
          slipTotal += wheel->slip;
          torqueTotal += wheel->torqueScale;
       }
+   }
 
    // Update the sounds based on wheel slip and torque output
    updateSquealSound(slipTotal / mDataBlock->wheelCount);
@@ -839,7 +847,6 @@ void WheeledVehicle::advanceTime(F32 dt)
    if (mTailLightThread)
       mShapeInstance->advanceTime(dt,mTailLightThread);
 }
-
 
 //----------------------------------------------------------------------------
 /** Update the rigid body forces on the vehicle
@@ -1080,6 +1087,7 @@ void WheeledVehicle::updateForces(F32 dt)
             wheel->avel -= brakeVel;
          else
             wheel->avel += brakeVel;
+
    }
 
    // Jet Force
@@ -1431,6 +1439,7 @@ void WheeledVehicle::prepBatchRender(SceneRenderState* state, S32 mountedImageIn
    GFX->setWorldMatrix( mat );
 
    Wheel* wend = &mWheel[mDataBlock->wheelCount];
+
    for (Wheel* wheel = mWheel; wheel < wend; wheel++) 
    {
       if (wheel->shapeInstance) 

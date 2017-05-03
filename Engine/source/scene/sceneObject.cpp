@@ -945,6 +945,7 @@ void SceneObject::setProcessTick( bool t )
 
    if ( mProcessTick )
    {
+ //TODO: THIS LINES CAUSES STOP OF WHEEL ROTATION!
       if ( !getMountedObjectCount() )
          plUnlink(); // Only unlink if there is nothing mounted to us
       mProcessTick = false;
