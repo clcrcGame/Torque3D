@@ -96,9 +96,9 @@ function serverCmddismountVehicle(%client)
    %car = %client.player.getControlObject();
    
    %passenger = %car.getMountNodeObject(0);
-   %passenger.getDataBlock().doDismount(%passenger, true);
-   
-   %client.setControlObject(%client.player);
+  
+   %car.unmountObject(%passenger);
+   %passenger.mVehicle = "";
 }
 
 function serverCmdmountVehicle(%client)
