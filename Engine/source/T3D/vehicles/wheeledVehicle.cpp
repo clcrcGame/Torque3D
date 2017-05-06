@@ -786,12 +786,10 @@ void WheeledVehicle::updateMove(const Move* move)
       mShapeInstance->setTimeScale(mTailLightThread, mBraking? 1.0f : -1.0f);
 }
 
-#include <iostream>
+
 //----------------------------------------------------------------------------
 void WheeledVehicle::advanceTime(F32 dt)
 {
-	static int test = 0;
-	int test2 = 0;
    PROFILE_SCOPE( WheeledVehicle_AdvanceTime );
 
    Parent::advanceTime(dt);
@@ -805,15 +803,9 @@ void WheeledVehicle::advanceTime(F32 dt)
    F32 slipTotal = 0;
    F32 torqueTotal = 0;
 
-
-std::cout << test << std::endl;
-test++;
-
    Wheel* wend = &mWheel[mDataBlock->wheelCount];
    for (Wheel* wheel = mWheel; wheel < wend; wheel++) {
       if (wheel->tire && wheel->spring) {
-	std::cout << test2 << std::endl;
-	test2++;
          // Update angular position
          wheel->apos += (wheel->avel * dt) / M_2PI;
          wheel->apos -= mFloor(wheel->apos);
