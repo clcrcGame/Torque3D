@@ -6155,9 +6155,13 @@ void Player::readPacketData(GameConnection *connection, BitStream *stream)
       ShapeBase* obj = static_cast<ShapeBase*>(connection->resolveGhost(gIndex));
       obj->readPacketData(connection, stream);
       obj->mountObject(this, 0);
-   }
-   else
-      setControlObject(0);
+      setControlObject(obj);
+   } else {
+      if(mMount.object) {
+         mMount.object->unmountObject(this);
+         setControlObject(0);
+      }
+   } 
 }
 
 U32 Player::packUpdate(NetConnection *con, U32 mask, BitStream *stream)
