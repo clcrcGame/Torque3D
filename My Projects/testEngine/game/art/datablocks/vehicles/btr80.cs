@@ -164,8 +164,8 @@ datablock WheeledVehicleTire(BTRCarTireRear)
 datablock WheeledVehicleSpring(BTRCarSpring)
 {
    // Wheel suspension properties
-   length = 0.5;             // Suspension travel
-   force = 2800;              // Spring force
+   length = 0.40;             // Suspension travel
+   force = 28000;              // Spring force
    damping = 3600;             // Spring damping
    antiSwayForce = 3;         // Lateral anti-sway force
 };
@@ -191,8 +191,8 @@ datablock WheeledVehicleData(BTRCar)
    cameraDecay = 1.25;        // Decay per sec. rate of velocity lag
 
    // Rigid Body
-   mass = "400";
-   massCenter = "0 0.5 0";    // Center of mass for rigid body
+   mass = "1000";
+   massCenter = "0 -1 0";    // Center of mass for rigid body
    massBox = "0 0 0";         // Size of box used for moment of inertia,
                               // if zero it defaults to object bounding box
    drag = 0.6;                // Drag coefficient
@@ -207,7 +207,7 @@ datablock WheeledVehicleData(BTRCar)
 
    // Engine
    engineTorque = 4300;       // Engine power
-   engineBrake = "5000";         // Braking when throttle is 0
+   engineBrake = "500";         // Braking when throttle is 0
    brakeTorque = "10000";        // When brakes are applied
    maxWheelSpeed = 50;        // Engine scale by current speed / max speed
 

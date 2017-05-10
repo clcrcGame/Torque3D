@@ -245,6 +245,8 @@ public:
    void readPacketData(GameConnection * conn, BitStream *stream);
    U32  packUpdate(NetConnection * conn, U32 mask, BitStream *stream);
    void unpackUpdate(NetConnection * conn, BitStream *stream);
+
+   Point3F getExitPosition(String name);
 };
 
 

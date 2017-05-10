@@ -30,11 +30,14 @@ function BTRCar::onAdd(%this, %obj)
       %obj.setWheelTire(%i,BTRCarTire);
       %obj.setWheelPowered(%i, true);
       %obj.setWheelSpring(%i, BTRCarSpring);
+      %obj.setWheelSteering(%i, 0);
    }
 
    // Steer with the front tires
    %obj.setWheelSteering(0, 1);
    %obj.setWheelSteering(1, 1);
+   %obj.setWheelSteering(6, 1);
+   %obj.setWheelSteering(7, 1);
 
    // Add tail lights
 /*   %obj.rightBrakeLight = new PointLight() 

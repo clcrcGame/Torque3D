@@ -93,12 +93,21 @@ function serverCmdsetPlayerControl(%client)
 
 function serverCmddismountVehicle(%client)
 {
-   %car = %client.player.getControlObject();
-   
+   %car = %client.player.getControlObject();   
    %passenger = %car.getMountNodeObject(0);
-  
    %car.unmountObject(%passenger);
    %passenger.mVehicle = "";
+
+ 
+   %car_transform = %car.getTransform();
+   %exit_pos = %car.getExitPosition("LeftUpperDoorMesh2");
+   
+   //This rotates exit_pos...
+   %exit_pos = MatrixMulVector(%car_transform, %exit_pos);
+   //And this sets proper position...
+   %exit_pos = VectorAdd(%exit_pos, %car_transform); 
+
+   %passenger.setTransform(%exit_pos);
 }
 
 function serverCmdmountVehicle(%client)

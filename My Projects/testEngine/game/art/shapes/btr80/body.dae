@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.73.0 commit date:2015-01-20, commit time:18:16, hash:bbf09d9</authoring_tool>
     </contributor>
-    <created>2017-05-06T18:25:53</created>
-    <modified>2017-05-06T18:25:53</modified>
+    <created>2017-05-07T14:17:28</created>
+    <modified>2017-05-07T14:17:28</modified>
     <unit name="centimeter" meter="0.01"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -696,61 +696,61 @@
         <instance_light url="#EnvironmentAmbientLight-light"/>
       </node>
       <node id="Armature" name="Armature" type="NODE">
-        <matrix sid="transform">1 0 0 -11.49896 0 1 0 7.841039 0 0 1 -1.802909 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
         <node id="bn_Root" name="bn_Root" sid="bn_Root" type="JOINT">
           <matrix sid="transform">-0.9510388 -0.3081942 0.02325743 0 0.3081943 -0.9399924 0.1463919 0 -0.02325505 0.1463923 0.9889531 0 0 0 0 1</matrix>
           <node id="bn_ShockFrontLeft" name="bn_ShockFrontLeft" sid="bn_ShockFrontLeft" type="JOINT">
-            <matrix sid="transform">0.5777673 0.7747842 0.2566991 111.6712 -0.5707757 0.1587198 0.8056198 -79.36 0.5834382 -0.6119783 0.5339311 75.04362 0 0 0 1</matrix>
+            <matrix sid="transform">-0.8164041 0.4516563 0.3598484 109.3219 0.5126615 0.2800109 0.8116478 -72.57204 0.2658245 0.8471126 -0.4601489 68.9277 0 0 0 1</matrix>
             <node id="hub0" name="hub0" sid="hub0" type="JOINT">
-              <matrix sid="transform">0.3599998 0.48 0.8000001 -1.52588e-5 0.8 -0.6 2.68221e-7 25 0.48 0.6400002 -0.5999998 2.86102e-6 0 0 0 1</matrix>
+              <matrix sid="transform">-0.6246154 0.356923 -0.6945947 7.62939e-6 0.496139 0.868243 1.07652e-7 40.31131 0.6030771 -0.3446152 -0.7194013 1.14441e-5 0 0 0 1</matrix>
             </node>
-            <node id="bn_ShockMiddleFrontLeft" name="bn_ShockMiddleFrontLeft" sid="bn_ShockMiddleFrontLeft" type="JOINT">
-              <matrix sid="transform">-0.5392001 -0.576 0.6144 -104 -0.576 -0.2800001 -0.7680002 -1.14441e-5 0.6143999 -0.768 -0.1807999 77.99997 0 0 0 1</matrix>
-              <node id="hub1" name="hub1" sid="hub1" type="JOINT">
-                <matrix sid="transform">0.3599997 0.48 0.8 -14.4 0.7999999 -0.6 2.73064e-7 -7.000008 0.4800002 0.64 -0.5999998 -19.2 0 0 0 1</matrix>
-              </node>
+          </node>
+          <node id="bn_ShockMiddleFrontLeft" name="bn_ShockMiddleFrontLeft" sid="bn_ShockMiddleFrontLeft" type="JOINT">
+            <matrix sid="transform">-0.5740477 0.4516564 -0.6829903 68.94841 -0.6356366 0.2800112 0.7194166 50.56698 0.516174 0.8471129 0.1263496 49.75037 0 0 0 1</matrix>
+            <node id="hub1" name="hub1" sid="hub1" type="JOINT">
+              <matrix sid="transform">0.7538463 0.4307692 -0.4961388 3.8147e-6 -0.4961389 0.868243 -1.09221e-7 40.31128 0.4307689 0.2461538 0.8682433 -2.86102e-6 0 0 0 1</matrix>
             </node>
           </node>
           <node id="bn_ShockRearLeft" name="bn_ShockRearLeft" sid="bn_ShockRearLeft" type="JOINT">
-            <matrix sid="transform">0.5777673 0.7747844 0.2566985 -19.31149 -0.5707759 0.1587206 0.8056197 320.1368 0.583438 -0.6119779 0.5339316 12.82708 0 0 0 1</matrix>
+            <matrix sid="transform">-0.8139217 0.5081921 0.2815533 -21.77705 0.4707046 0.2927614 0.8323027 327.6568 0.3405418 0.8099575 -0.4774932 11.65594 0 0 0 1</matrix>
             <node id="hub3" name="hub3" sid="hub3" type="JOINT">
-              <matrix sid="transform">0.3600005 0.48 0.7999998 1.52588e-5 0.8 -0.6 -4.50015e-7 25.00001 0.4799995 0.64 -0.6000003 -3.05176e-5 0 0 0 1</matrix>
+              <matrix sid="transform">-0.6369233 0.4246157 -0.6434519 -1.52588e-5 0.5547004 0.8320503 -9.28969e-8 36.05552 0.5353844 -0.3569231 -0.7654866 0 0 0 0 1</matrix>
             </node>
           </node>
           <node id="bn_ShockRearRight" name="bn_ShockRearRight" sid="bn_ShockRearRight" type="JOINT">
-            <matrix sid="transform">-0.2533587 0.9176125 0.3062618 -238.0505 -0.221568 0.2531308 -0.9417178 249.2521 -0.9416565 -0.3064502 0.1391807 18.17635 0 0 0 1</matrix>
+            <matrix sid="transform">-0.4270365 -0.68893 -0.585675 -173.9434 -0.7338225 -0.1144107 0.6696376 278.3457 -0.5283411 0.715741 -0.4566948 15.37717 0 0 0 1</matrix>
             <node id="hub4" name="hub4" sid="hub4" type="JOINT">
-              <matrix sid="transform">-0.2873398 -0.9577982 -0.007662472 0 0.9578264 -0.287348 4.27637e-7 52.20156 -0.002202237 -0.00733918 0.9999706 0 0 0 0 1</matrix>
+              <matrix sid="transform">-0.6200004 -0.6200002 0.4808322 -1.52588e-5 -0.7071067 0.7071069 -4.04888e-7 42.42641 -0.3399995 -0.3399998 -0.8768128 0 0 0 0 1</matrix>
             </node>
           </node>
           <node id="bn_ShockFrontRight" name="bn_ShockFrontRight" sid="bn_ShockFrontRight" type="JOINT">
-            <matrix sid="transform">0.1069801 -0.7468781 -0.6562989 -40.49514 0.7926756 -0.3343915 0.5097529 -128.6711 -0.6001839 -0.5747654 0.5562587 78.76484 0 0 0 1</matrix>
+            <matrix sid="transform">-0.4270362 -0.6889302 -0.585675 -42.9607 -0.7338222 -0.1144116 0.6696378 -121.1512 -0.5283417 0.715741 -0.4566944 77.5937 0 0 0 1</matrix>
             <node id="hub7" name="hub7" sid="hub7" type="JOINT">
-              <matrix sid="transform">0.3599989 -0.4799998 -0.8000004 -1.52588e-5 -0.7999999 -0.5999997 6.64592e-7 25 -0.4800008 0.6399999 -0.5999992 -3.33786e-6 0 0 0 1</matrix>
+              <matrix sid="transform">-0.62 -0.6200003 0.4808322 -1.52588e-5 -0.7071068 0.7071068 -2.17978e-7 42.42642 -0.3399996 -0.3399998 -0.8768127 7.62939e-6 0 0 0 1</matrix>
             </node>
           </node>
           <node id="bn_ShockMiddleFrontRight" name="bn_ShockMiddleFrontRight" sid="bn_ShockMiddleFrontRight" type="JOINT">
-            <matrix sid="transform">-0.0846561 0.7747844 0.6265319 -80.56043 -0.933212 0.1587199 -0.3223713 -6.472084 -0.3492114 -0.6119778 0.7096015 59.73391 0 0 0 1</matrix>
+            <matrix sid="transform">-0.6818184 -0.6889302 0.2459655 -83.33418 0.4373817 -0.1144113 0.8919683 1.987849 -0.5863626 0.7157412 0.3793331 58.41637 0 0 0 1</matrix>
             <node id="hub6" name="hub6" sid="hub6" type="JOINT">
-              <matrix sid="transform">0.36 -0.4800001 -0.7999999 14.4 -0.8 -0.6 1.2517e-7 -6.999985 -0.4800001 0.6399999 -0.6 -19.2 0 0 0 1</matrix>
+              <matrix sid="transform">0.5000001 -0.5 0.7071067 3.8147e-6 0.7071069 0.7071069 -5.53177e-8 42.42643 -0.4999999 0.5 0.7071069 3.33786e-6 0 0 0 1</matrix>
             </node>
           </node>
           <node id="bn_ShockMiddleRearRight" name="bn_ShockMiddleRearRight" sid="bn_ShockMiddleRearRight" type="JOINT">
-            <matrix sid="transform">-0.08465641 0.7747846 0.6265317 -132.9535 -0.9332122 0.1587194 -0.3223712 153.3266 -0.349211 -0.6119779 0.7096018 34.84729 0 0 0 1</matrix>
+            <matrix sid="transform">-0.6818184 -0.68893 0.2459653 -134.1863 0.4373817 -0.1144118 0.8919683 157.0866 -0.5863624 0.7157411 0.3793335 34.26172 0 0 0 1</matrix>
             <node id="hub5" name="hub5" sid="hub5" type="JOINT">
-              <matrix sid="transform">0.3600001 -0.4800001 -0.7999999 14.40001 -0.7999998 -0.6000001 -1.43051e-7 -6.999969 -0.48 0.64 -0.6000001 -19.2 0 0 0 1</matrix>
+              <matrix sid="transform">0.5000004 -0.5000001 0.7071065 3.05176e-5 0.7071068 0.7071069 -3.27826e-7 42.42642 -0.4999997 0.5000001 0.7071069 7.62939e-6 0 0 0 1</matrix>
             </node>
           </node>
           <node id="bn_ShockMiddleRearLeft" name="bn_ShockMiddleRearLeft" sid="bn_ShockMiddleRearLeft" type="JOINT">
-            <matrix sid="transform">-0.6000925 -0.7468779 -0.2864649 22.29478 0.7113119 -0.3343914 -0.6182376 193.2378 0.3659566 -0.5747657 0.7319289 32.58997 0 0 0 1</matrix>
+            <matrix sid="transform">-0.4981896 0.5081922 -0.7025296 17.98005 -0.6672136 0.2927607 0.6849214 206.3977 0.5537447 0.8099579 0.1932224 30.54049 0 0 0 1</matrix>
             <node id="hub2" name="hub2" sid="hub2" type="JOINT">
-              <matrix sid="transform">0.3600002 0.48 0.7999998 -14.39998 0.8000001 -0.6 -2.20537e-7 -7 0.4799999 0.64 -0.6000001 -19.2 0 0 0 1</matrix>
+              <matrix sid="transform">0.6923079 0.4615384 -0.5546998 0 -0.5547001 0.8320502 -2.70195e-7 36.05551 0.4615382 0.3076924 0.8320505 0 0 0 0 1</matrix>
             </node>
           </node>
         </node>
       </node>
       <node id="Glass0" name="Glass0" type="NODE">
-        <matrix sid="transform">1 0 0 3.43323e-5 0 1 0 -4.00543e-5 0 0 1 1.266e-4 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 11.49896 0 1 0 -7.841039 0 0 1 1.802909 0 0 0 1</matrix>
         <instance_geometry url="#Glass0-mesh">
           <bind_material>
             <technique_common>
@@ -760,7 +760,7 @@
         </instance_geometry>
       </node>
       <node id="Glass" name="Glass" type="NODE">
-        <matrix sid="transform">1 0 0 3.43323e-5 0 1 0 -4.00543e-5 0 0 1 1.266e-4 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 11.49896 0 1 0 -7.841039 0 0 1 1.802909 0 0 0 1</matrix>
         <instance_geometry url="#Glass-mesh">
           <bind_material>
             <technique_common>
@@ -770,7 +770,7 @@
         </instance_geometry>
       </node>
       <node id="AntennaMesh2" name="AntennaMesh2" type="NODE">
-        <matrix sid="transform">1 0 0 3.43323e-5 0 1 0 -4.00543e-5 0 0 1 1.266e-4 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 11.49896 0 1 0 -7.841039 0 0 1 1.802909 0 0 0 1</matrix>
         <instance_geometry url="#AntennaMesh2-mesh">
           <bind_material>
             <technique_common>
@@ -780,7 +780,7 @@
         </instance_geometry>
       </node>
       <node id="LeftUpperDoorMesh2" name="LeftUpperDoorMesh2" type="NODE">
-        <matrix sid="transform">1 0 0 3.43323e-5 0 1 0 -4.00543e-5 0 0 1 1.266e-4 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 11.49896 0 1 0 -7.841039 0 0 1 1.802909 0 0 0 1</matrix>
         <instance_geometry url="#LeftUpperDoorMesh2-mesh">
           <bind_material>
             <technique_common>
@@ -790,7 +790,7 @@
         </instance_geometry>
       </node>
       <node id="RightUpperDoorMesh2" name="RightUpperDoorMesh2" type="NODE">
-        <matrix sid="transform">1 0 0 3.43323e-5 0 1 0 -4.00543e-5 0 0 1 1.266e-4 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 11.49896 0 1 0 -7.841039 0 0 1 1.802909 0 0 0 1</matrix>
         <instance_geometry url="#RightUpperDoorMesh2-mesh">
           <bind_material>
             <technique_common>
@@ -800,7 +800,7 @@
         </instance_geometry>
       </node>
       <node id="RightLowerDoorMesh2" name="RightLowerDoorMesh2" type="NODE">
-        <matrix sid="transform">1 0 0 3.43323e-5 0 1 0 -4.00543e-5 0 0 1 1.266e-4 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 11.49896 0 1 0 -7.841039 0 0 1 1.802909 0 0 0 1</matrix>
         <instance_geometry url="#RightLowerDoorMesh2-mesh">
           <bind_material>
             <technique_common>
@@ -810,7 +810,7 @@
         </instance_geometry>
       </node>
       <node id="LeftLowerDoorsMesh2" name="LeftLowerDoorsMesh2" type="NODE">
-        <matrix sid="transform">1 0 0 3.43323e-5 0 1 0 -4.00543e-5 0 0 1 1.266e-4 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 11.49896 0 1 0 -7.841039 0 0 1 1.802909 0 0 0 1</matrix>
         <instance_geometry url="#LeftLowerDoorsMesh2-mesh">
           <bind_material>
             <technique_common>
@@ -820,7 +820,7 @@
         </instance_geometry>
       </node>
       <node id="CannonMesh2" name="CannonMesh2" type="NODE">
-        <matrix sid="transform">1 0 0 3.43323e-5 0 1 0 -4.00543e-5 0 0 1 1.266e-4 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 11.49896 0 1 0 -7.841039 0 0 1 1.802909 0 0 0 1</matrix>
         <instance_geometry url="#CannonMesh2-mesh">
           <bind_material>
             <technique_common>
@@ -830,7 +830,7 @@
         </instance_geometry>
       </node>
       <node id="TurretMesh2" name="TurretMesh2" type="NODE">
-        <matrix sid="transform">1 0 0 3.43323e-5 0 1 0 -4.00543e-5 0 0 1 1.266e-4 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 11.49896 0 1 0 -7.841039 0 0 1 1.802909 0 0 0 1</matrix>
         <instance_geometry url="#TurretMesh2-mesh">
           <bind_material>
             <technique_common>
@@ -840,7 +840,7 @@
         </instance_geometry>
       </node>
       <node id="FrameMesh2" name="FrameMesh2" type="NODE">
-        <matrix sid="transform">0.999999 0 0 3.43323e-5 0 1 0 -4.00543e-5 0 0 1 1.266e-4 0 0 0 1</matrix>
+        <matrix sid="transform">0.999999 0 0 11.49896 0 1 0 -7.841039 0 0 1 1.802909 0 0 0 1</matrix>
         <instance_geometry url="#FremMesh2-mesh">
           <bind_material>
             <technique_common>
@@ -860,7 +860,7 @@
         </instance_geometry>
       </node>
       <node id="GunMesh2" name="GunMesh2" type="NODE">
-        <matrix sid="transform">1 0 0 3.43323e-5 0 1 0 -4.00543e-5 0 0 1 1.266e-4 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 11.49896 0 1 0 -7.841039 0 0 1 1.802909 0 0 0 1</matrix>
         <instance_geometry url="#GunMesh2-mesh">
           <bind_material>
             <technique_common>
@@ -870,10 +870,10 @@
         </instance_geometry>
       </node>
       <node id="CAM" name="CAM" type="NODE">
-        <matrix sid="transform">1 0 0 -11.49896 0 1 0 9.358039 0 0 1 0.4690912 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 0 0 1 0 -700 0 0 1 300 0 0 0 1</matrix>
       </node>
       <node id="EYE" name="EYE" type="NODE">
-        <matrix sid="transform">1 0 0 -11.49896 0 1 0 7.022039 0 0 1 -0.8729089 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 0 0 1 0 -700 0 0 1 300 0 0 0 1</matrix>
       </node>
       <node id="MOUNT0" name="MOUNT0" type="NODE">
         <matrix sid="transform">1 0 0 -11.49896 0 1 0 7.046056 0 0 1 -1.454909 0 0 0 1</matrix>

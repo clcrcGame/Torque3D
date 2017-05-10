@@ -91,7 +91,7 @@ start 13:45, 03.05.2017
 								Player::setControlObject
 									Vehicle/
 									ShapeBase::setControllingObject
-														SceneObject::setProcessTick(false)
+									SceneObject::setProcessTick(false)
 
 		Answer: Problem is with Player::readPacketData and setControlObject,
 			which is called twice. 
@@ -107,5 +107,16 @@ xx:xx - xx:xx - repair it.
 
 		Problem 1: unmounting from vehicle.
 		It's seems to be very messy.
+
+		Solution: Add obj->mountObject(this, 0) after setControlObject(obj)
 					
-xx:xx - xx:xx again change spring and mass centre.
+
+start 20:36, 09.05.2017
+00:36 - 21:12 - how script searches mesh ID?
+
+this->mShapeInstance->details something. You've been using it in this way.
+Problem:
+only two details are created. details2 and collision-2. Does the details2 contain another details?
+
+Done at 21:23, 10.05.2017, look to the commit.
+
