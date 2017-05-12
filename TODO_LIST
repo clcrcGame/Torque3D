@@ -117,6 +117,14 @@ start 20:36, 09.05.2017
 this->mShapeInstance->details something. You've been using it in this way.
 Problem:
 only two details are created. details2 and collision-2. Does the details2 contain another details?
+Solved.
 
-Done at 21:23, 10.05.2017, look to the commit.
+Done at 21:23, 10.05.2017, look to the commit eed0bb 
+
+start 20:43, 12.05.2017
+xx:xx - xx:xx - generic doors.
+xx:xx - xx:xx - bug with rotating wheels. Should you inform mainline?
+xx:xx - xx:xx - wheels must be wheels.
+xx:xx - xx:xx - second axis wheel angle.
+
 
