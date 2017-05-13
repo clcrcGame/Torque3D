@@ -102,10 +102,13 @@ function serverCmddismountVehicle(%client)
    %car_transform = %car.getTransform();
    %exit_pos = %car.getExitPosition("LeftUpperDoorMesh2");
    
-   //This rotates exit_pos...
+   //This rotates exit_pos.
    %exit_pos = MatrixMulVector(%car_transform, %exit_pos);
-   //And this sets proper position...
+   //And this sets proper position.
    %exit_pos = VectorAdd(%exit_pos, %car_transform); 
+   //And additional height to drop point because floor/collision detection may
+   //fail.
+   %exit_pos = VectorAdd(%exit_pos, "0 0 2");
 
    %passenger.setTransform(%exit_pos);
 }

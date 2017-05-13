@@ -130,7 +130,7 @@ struct VehicleData: public ShapeBaseData
    bool enablePhysicsRep;
 
    //Box wrapping door mesh.
-   Box3F entryBox;
+   Vector<Box3F> entryBoxes;
 
    //
    VehicleData();

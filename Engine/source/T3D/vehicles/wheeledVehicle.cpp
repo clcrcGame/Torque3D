@@ -1606,11 +1606,14 @@ void WheeledVehicle::unpackUpdate(NetConnection *con, BitStream *stream)
    }
 }
 
-#include <iostream>
 Point3F WheeledVehicle::getExitPosition(String name)
 {
+   static U32 it = 0;
+   int size = mDataBlock->entryBoxes.size();
+   it = (it + 1) % size;
+  
    //entryBox located in VehicleData 
-   return mDataBlock->entryBox.getCenter();
+   return mDataBlock->entryBoxes[it].getCenter();
    
 }
 

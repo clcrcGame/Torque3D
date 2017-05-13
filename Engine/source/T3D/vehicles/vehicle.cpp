@@ -262,21 +262,34 @@ bool VehicleData::preload(bool server, String &errorStr)
       }
    }
 
+   //Now search for objects containing string "Door".
+   //Bounds of object's mesh will be used later to i.e. get position of exit.
    if (mShape) {
+      Vector<String> tmp;
       U32 exit_index;
       TSMesh *mesh;
+      String::SizeType num;
     
-      String name("LeftUpperDoorMesh2");
-      exit_index = mShape->findObject(name);
-      if (exit_index != -1) {
-         TSShape::Object& obj = mShape->objects[exit_index];
-         
-         mesh = mShape->meshes[obj.startMeshIndex];
- 	
-         if (mesh)      
-            entryBox = mesh->getBounds(); 
+      for (int i = 0; i < mShape->names.size(); i++) {
+	 num = mShape->names[i].find("Door");
+
+	 //We have found some object which name contains "Door".
+	 if (num != ~0) {
+            exit_index = mShape->findObject(mShape->names[i]);
+            if (exit_index != -1) {
+               TSShape::Object& obj = mShape->objects[exit_index];
+               
+               mesh = mShape->meshes[obj.startMeshIndex];
+              
+               if (mesh)      
+                  entryBoxes.push_back(mesh->getBounds()); 
+            }
+         }
       }
    }
+
+   if (entryBoxes.empty())
+	entryBoxes.push_back(Box3F());
 
    return true;
 }
