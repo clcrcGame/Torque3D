@@ -782,6 +782,8 @@ public:
    virtual void renderMountedImage( U32 imageSlot, TSRenderState &rstate, SceneRenderState *state );
 
    ShapeBase* getPointedObject();
+   Point3F getPointedPoint();
+   RayInfo pointWithRay(F32 distance);
 };
 
 typedef Player::Pose PlayerPose;

@@ -6707,6 +6707,13 @@ DefineEngineMethod( Player, getPointedObject, S32, (),,
    return pointedObject ? pointedObject->getId(): 0;
 }
 
+DefineEngineMethod( Player, getPointedPoint, Point3F, (),,
+   "@brief Get the point we are looking at.\n\n"
+   "@return Point3F.\n")
+{
+   return object->getPointedPoint();
+}
+
 DefineEngineMethod( Player, clearControlObject, void, (),,
    "@brief Clears the player's current control object.\n\n"
    "Returns control to the player. This internally calls "
@@ -7219,8 +7226,7 @@ ConsoleMethod(Player, setVRControllers, void, 4, 4, "")
 
 #endif
 
-//copied from guiCrossHairHud.cpp
-ShapeBase* Player::getPointedObject()
+RayInfo Player::pointWithRay(F32 distance)
 {
    U32 ObjectMask = PlayerObjectType | VehicleObjectType;
   
@@ -7247,7 +7253,7 @@ ShapeBase* Player::getPointedObject()
    disableCollision();
 
    RayInfo info;
-   if (gServerContainer.castRay(camPos, endPos, losMask, &info)) {
+   if (gServerContainer.castRayRendered(camPos, endPos, losMask, &info)) {
       // Hit something... Could mask against the object type here
       // and do a static cast if it's a ShapeBaseObjectType, but this
       // isn't a performance situation, so I'll just use dynamic_cast.
@@ -7257,5 +7263,16 @@ ShapeBase* Player::getPointedObject()
    // Restore control object collision
    enableCollision();
 
-   return sb;
+   return info;
+}
+
+//copied from guiCrossHairHud.cpp
+ShapeBase* Player::getPointedObject()
+{
+   return dynamic_cast<ShapeBase *>(pointWithRay(3.0f).object);
+}
+
+Point3F Player::getPointedPoint()
+{
+   return pointWithRay(3.0f).point;
 }

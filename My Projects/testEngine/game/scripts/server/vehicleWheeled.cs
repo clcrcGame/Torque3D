@@ -117,31 +117,42 @@ function serverCmdmountVehicle(%client)
 {
    %player = %client.player;
    %obj = %player.getPointedObject();
-
+   %point = %player.getPointedPoint();//TODO: return RayInfo?
    // Mount vehicles
+
+   echo("1");
    if (%obj.getType() & $TypeMasks::GameBaseObjectType)
    {
       %db = %obj.getDataBlock();
-
+      echo("2");
       if ((%db.getClassName() $= "WheeledVehicleData") && %obj.mountable &&
 	  %player.mountVehicle)
-      {
+      {	
+         echo(%point);
+         echo("3");
+	 %car_inverse_transform = %obj.getInverseTransform();
+	 %point = MatrixMulVector(%car_inverse_transform, %point);
+         %point = VectorAdd(%point, %car_inverse_transform);
 
-	 
-         // Only mount drivers for now.
-         ServerConnection.setFirstPerson(0);
-         
-         // For this specific example, only one person can fit
-         // into a vehicle
-         %mount = %obj.getMountNodeObject(0);         
-         if(%mount)
-            return;
-         
-         // For this specific FPS Example, always mount the player
-         // to node 0
-         %node = 0;
-         %obj.mountObject(%player, %node);
-         %player.mVehicle = %obj;
+         echo(%point);
+
+	 if (%db.pointLocatedInDoorBounding(%point)) { 
+            echo("4");
+            // Only mount drivers for now.
+            ServerConnection.setFirstPerson(0);
+            
+            // For this specific example, only one person can fit
+            // into a vehicle
+            %mount = %obj.getMountNodeObject(0);         
+            if(%mount)
+               return;
+            
+            // For this specific FPS Example, always mount the player
+            // to node 0
+            %node = 0;
+            %obj.mountObject(%player, %node);
+            %player.mVehicle = %obj;
+         }
       }
    }
 }

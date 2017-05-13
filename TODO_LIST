@@ -127,6 +127,9 @@ xx:xx - xx:xx - generic doors.
 		IDEA: go near to the doors, look at doors, click button, goes in if there is place.
 		If there is no space, click 3x, and there you got (even if there are is no space to sit).
 		You can get damages if vehicle goes to fast.
+
+		TODO:
+		xx:xx - OK you have something. Now this about optimalisation and naming.
  
 xx:xx - xx:xx - bug with rotating wheels. Should you inform mainline?
 xx:xx - xx:xx - wheels must be wheels.

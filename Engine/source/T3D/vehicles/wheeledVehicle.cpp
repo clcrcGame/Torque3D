@@ -1715,3 +1715,15 @@ DefineEngineMethod( WheeledVehicle, getExitPosition, Point3F, (String name),,
 {
    return object->getExitPosition(name);
 } 
+
+DefineEngineMethod( WheeledVehicleData, pointLocatedInDoorBounding, bool, (Point3F point),,
+   "@brief This method return true if passed point is located in any door bounding.\n"
+   "@param point must be in vehicle coordinates!\n"
+   "@return True when point is located in entry bounding box, false otherwise.\n\n")
+{
+   for (int i = 0; i < object->entryBoxes.size(); i++) {
+      if (object->entryBoxes[i].isContained(point))
+         return true;
+   }
+   return false;
+}
