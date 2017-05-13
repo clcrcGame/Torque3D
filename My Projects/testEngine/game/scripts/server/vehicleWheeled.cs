@@ -123,6 +123,8 @@ function serverCmdmountVehicle(%client)
       if ((%db.getClassName() $= "WheeledVehicleData") && %obj.mountable &&
 	  %player.mountVehicle)
       {
+
+	 
          // Only mount drivers for now.
          ServerConnection.setFirstPerson(0);
          

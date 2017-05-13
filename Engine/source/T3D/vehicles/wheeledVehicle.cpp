@@ -1609,28 +1609,8 @@ void WheeledVehicle::unpackUpdate(NetConnection *con, BitStream *stream)
 #include <iostream>
 Point3F WheeledVehicle::getExitPosition(String name)
 {
-   U32 exit_index;
-   TSShape *shape;
-   TSMesh* mesh;
-   Box3F bounds;
-
-   shape = const_cast<TSShape *>(getShape());
-
-   exit_index = shape->findObject(name);
-   std::cout << "exit_index = " << exit_index << std::endl;
-   mesh = NULL;
-	
-   TSShape::Object& obj = shape->objects[exit_index];
-
-  mesh = shape->meshes[obj.startMeshIndex];
-  std::cout << "mesh = " << mesh << std::endl; 
-	
-   if (!mesh)
-      return Point3F(0, 0, 0);
-
-   bounds = mesh->getBounds();
- 
-   return bounds.getCenter();
+   //entryBox located in VehicleData 
+   return mDataBlock->entryBox.getCenter();
    
 }
 
@@ -1727,7 +1707,8 @@ DefineEngineMethod( WheeledVehicle, getWheelCount, S32, (),,
    return object->getWheelCount();
 }
 
-DefineEngineMethod( WheeledVehicle, getExitPosition, Point3F, (String name),, "" )
+DefineEngineMethod( WheeledVehicle, getExitPosition, Point3F, (String name),, 
+   "@brief Get position of mesh, which name is the same as passed name.\nPosition is is object's coordinates.\n@return Point3F of specified mesh in object's coordinates.\n\n" )
 {
    return object->getExitPosition(name);
 } 

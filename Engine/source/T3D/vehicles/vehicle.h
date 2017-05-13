@@ -129,6 +129,9 @@ struct VehicleData: public ShapeBaseData
 
    bool enablePhysicsRep;
 
+   //Box wrapping door mesh.
+   Box3F entryBox;
+
    //
    VehicleData();
    bool preload(bool server, String &errorStr);

@@ -262,6 +262,22 @@ bool VehicleData::preload(bool server, String &errorStr)
       }
    }
 
+   if (mShape) {
+      U32 exit_index;
+      TSMesh *mesh;
+    
+      String name("LeftUpperDoorMesh2");
+      exit_index = mShape->findObject(name);
+      if (exit_index != -1) {
+         TSShape::Object& obj = mShape->objects[exit_index];
+         
+         mesh = mShape->meshes[obj.startMeshIndex];
+ 	
+         if (mesh)      
+            entryBox = mesh->getBounds(); 
+      }
+   }
+
    return true;
 }
 
