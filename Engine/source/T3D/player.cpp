@@ -6714,6 +6714,14 @@ DefineEngineMethod( Player, getPointedPoint, Point3F, (),,
    return object->getPointedPoint();
 }
 
+DefineEngineMethod( Player, updatePointRay, void, (F32 distance),,
+   "@brief Update internal mPointRay object. Therefore this method must be invoked before\n"
+   "we call getPointedObject or getPointedPoint method.\n"
+   "@param F32 distance - testing ray length (if you can look to the code, you will understand).\n\n")
+{
+   object->updatePointRay(distance);
+}
+
 DefineEngineMethod( Player, clearControlObject, void, (),,
    "@brief Clears the player's current control object.\n\n"
    "Returns control to the player. This internally calls "
@@ -7226,42 +7234,36 @@ ConsoleMethod(Player, setVRControllers, void, 4, 4, "")
 
 #endif
 
-RayInfo Player::pointWithRay(F32 distance)
+RayInfo Player::updatePointRay(F32 distance)
 {
+   // Collision info. We're going to be running LOS tests and we
+   // don't want to collide with the control object.
+   static U32 losMask = TerrainObjectType | ShapeBaseObjectType;
    U32 ObjectMask = PlayerObjectType | VehicleObjectType;
-  
-   ShapeBase *sb = NULL;
-
-   // Get client eye transform
+   RayInfo info; 
    MatrixF cam;
    Point3F camPos;
+   Point3F endPos;
+
+   // Get client eye transform
    getEyeTransform(&cam);
    cam.getColumn(3, &camPos);
 
    // Extend the eye vector to create an endpoint for our ray
-   Point3F endPos;
    cam.getColumn(1, &endPos);
    //endPos *= gClientSceneGraph->getVisibleDistance();
 
-   endPos *= 3.0f; //TODO 3 meters from vehicle
+   endPos *= distance;
    endPos += camPos;
 
-
-   // Collision info. We're going to be running LOS tests and we
-   // don't want to collide with the control object.
-   static U32 losMask = TerrainObjectType | ShapeBaseObjectType;
    disableCollision();
 
-   RayInfo info;
-   if (gServerContainer.castRayRendered(camPos, endPos, losMask, &info)) {
-      // Hit something... Could mask against the object type here
-      // and do a static cast if it's a ShapeBaseObjectType, but this
-      // isn't a performance situation, so I'll just use dynamic_cast.
-      sb = dynamic_cast<ShapeBase*>(info.object);
-   }
+   gServerContainer.castRayRendered(camPos, endPos, losMask, &info);
 
    // Restore control object collision
    enableCollision();
+
+   mPointRay = info;
 
    return info;
 }
@@ -7269,10 +7271,10 @@ RayInfo Player::pointWithRay(F32 distance)
 //copied from guiCrossHairHud.cpp
 ShapeBase* Player::getPointedObject()
 {
-   return dynamic_cast<ShapeBase *>(pointWithRay(3.0f).object);
+   return dynamic_cast<ShapeBase *>(mPointRay.object);
 }
 
 Point3F Player::getPointedPoint()
 {
-   return pointWithRay(3.0f).point;
+   return mPointRay.point;
 }

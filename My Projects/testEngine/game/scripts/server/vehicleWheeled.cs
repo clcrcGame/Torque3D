@@ -116,6 +116,8 @@ function serverCmddismountVehicle(%client)
 function serverCmdmountVehicle(%client)
 {
    %player = %client.player;
+
+   %player.updatePointRay(3.0);
    %obj = %player.getPointedObject();
    %point = %player.getPointedPoint();//TODO: return RayInfo?
    // Mount vehicles

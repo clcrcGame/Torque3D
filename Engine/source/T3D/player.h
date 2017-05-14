@@ -781,9 +781,11 @@ public:
    virtual void renderConvex( ObjectRenderInst *ri, SceneRenderState *state, BaseMatInstance *overrideMat );   
    virtual void renderMountedImage( U32 imageSlot, TSRenderState &rstate, SceneRenderState *state );
 
+   RayInfo mPointRay;
+
+   RayInfo updatePointRay(F32 distance);
    ShapeBase* getPointedObject();
    Point3F getPointedPoint();
-   RayInfo pointWithRay(F32 distance);
 };
 
 typedef Player::Pose PlayerPose;
